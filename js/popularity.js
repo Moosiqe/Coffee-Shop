@@ -1,7 +1,7 @@
 addLayer("p", {
     name: "Popularity", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "P", // This appears on the layer's node. Default is the id with the first letter capitalized
-    position: 1, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         visible: true,
         unlocked: false,
@@ -32,6 +32,12 @@ addLayer("p", {
             // 2. ONLY apply the upgrades meant to boost Customers (13 and 22)
             if (hasUpgrade('p', 13)) customerGain = customerGain.times(upgradeEffect('p', 13));
             if (hasUpgrade('c', 22)) customerGain = customerGain.times(upgradeEffect('c', 22));
+            if (hasUpgrade('c', 23)) {
+                customerGain = customerGain.times(upgradeEffect('c', 23));
+            }
+            if (hasUpgrade('c', 42)) {
+                customerGain = customerGain.times(upgradeEffect('c', 42));
+            }
 
             // 3. Add to total balance
             player.p.customers = player.p.customers.add(customerGain.times(diff));
@@ -51,6 +57,9 @@ addLayer("p", {
             // Match the math exactly by only checking 13 and 22 here as well
             if (hasUpgrade('p', 13)) gainPerSecond = gainPerSecond.times(upgradeEffect('p', 13));
             if (hasUpgrade('c', 22)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 22));
+            if (hasUpgrade('c', 23)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 23));
+
+            if (hasUpgrade('c', 42)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 42));
 
             return "(+" + format(gainPerSecond) + "/sec)"
         }],
@@ -60,13 +69,20 @@ addLayer("p", {
     ],
             // --- Milestones ---
     milestones: {
-        1: {
+        0: {
             requirementDescription: "1000 Customers",
             done() { 
                 return player.p.customers.gte(1e3) // Checks your 'p' layer customers!
             },
             effectDescription: "Unlock bulk-buying for Coffee Cups.",
-        }
+        },
+        1: {
+            requirementDescription: "1M Customers",
+            done() { 
+                return player.p.customers.gte(1e6) 
+            },
+            effectDescription: "Popularity and Barista no longer reset Row 1 Coffee upgrades.",
+        },
     },
 
     row: 1, // Row the layer is in on the tree (0 is the first row)
@@ -83,7 +99,7 @@ addLayer("p", {
         11: {
             title: "Loyal Lads",
             description: "Customers multiply Beans.",
-            cost: new Decimal(50),
+            cost: new Decimal(15),
             effect() {
                 return player[this.layer].customers.add(1).pow(0.3)
             },
@@ -97,7 +113,7 @@ addLayer("p", {
         12: {
             title: "Beans for Days",
             description: "Unlock new upgrades for Coffee Cups.",
-            cost: new Decimal(450),
+            cost: new Decimal(100),
 
             currencyDisplayName: "Customers",       // The name shown when you hover over the cost
             currencyInternalName: "customers",      // The exact variable name inside startData()
