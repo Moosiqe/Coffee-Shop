@@ -1,12 +1,12 @@
 let modInfo = {
-	name: "The ??? Tree",
-	author: "nobody",
-	pointsName: "points",
-	modFiles: ["layers.js", "tree.js"],
+	name: "Coffee Shop",
+	author: "Moosiqe",
+	pointsName: "Beans",
+	modFiles: ["cups.js", "tree.js", "popularity.js"],
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal (1), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
@@ -40,9 +40,26 @@ function canGenPoints(){
 function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
-
 	let gain = new Decimal(1)
+	// --- Coffee Cups Upgrades ---
+	if (hasUpgrade('c', 11)) gain = gain.times(upgradeEffect('c', 11))
+	if (hasUpgrade('c', 12)) gain = gain.times(2)
+	if (hasUpgrade('c', 13)) gain = gain.times(upgradeEffect('c', 13))
+	if (hasUpgrade('c', 14)) gain = gain.times(4)
+	if (hasUpgrade('c', 15)) gain = gain.times(upgradeEffect('c', 15))
+	if (hasUpgrade('c', 21)) gain = gain.times(5)
+	
+        
+
+	// --- Popularity Upgrades & other ---
+	//if (player.p.unlocked) {
+        //let customerBoost = player.p.customers.times(0.1).add(1);
+        //gain = gain.times(customerBoost);
+   // }
+	if (hasUpgrade('p', 11)) gain = gain.times(upgradeEffect('p', 11))
 	return gain
+	if (hasUpgrade('p', 13)) {customerGain = customerGain.times(upgradeEffect('p', 13))}
+
 }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
