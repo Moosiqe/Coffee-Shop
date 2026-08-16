@@ -36,26 +36,33 @@ addLayer("b", { // "b" for Baristas
             done() { 
                 return player.b.points.gte(1) // Checks current Baristas
             },
-            effectDescription: "Unlock the Barista Training buyable and a new Coffee Cups upgrade.",
+            effectDescription: "Unlock the Barista Efficiency buyable and a new Coffee Cups upgrade.",
+        },
+        1: {
+            requirementDescription: "3 Barista",
+            done() { 
+                return player.b.points.gte(3) // Checks current Baristas
+            },
+            effectDescription: "Unlock the Advanced Frothing Technique buyable.",
         }
     },
 
     // --- BUYABLE THAT COSTS CUSTOMERS & BOOSTS BEANS ---
     buyables: {
         rows: 1, // REQUIRED: Tells the engine how many rows are in the buyable grid
-        cols: 1, // REQUIRED: Tells the engine how many columns are in the buyable grid
+        cols: 2, // REQUIRED: Tells the engine how many columns are in the buyable grid
         
         11: {
             title: "Barista Efficiency",
             cost(x) { 
                 // Costs 100 * (1.5 ^ level) Customers
-                return new Decimal(100).times(new Decimal(1.5).pow(x)) 
+                return new Decimal(100).times(new Decimal(1.75).pow(x)) 
             },
             display() { 
                 return "Train your baristas to work faster.\n\n" +
                        "Level: " + formatWhole(player.b.buyables[this.id]) + "\n" +
                        "Cost: " + format(this.cost()) + " Customers\n\n" +
-                       "Effect: Multiplies Bean production by " + format(buyableEffect(this.layer, this.id)) + "x"
+                       "Effect: Multiplies Beans by " + format(buyableEffect(this.layer, this.id)) + "x"
             },
             canAfford() { 
                 return player.p.customers.gte(this.cost()) 
@@ -67,16 +74,60 @@ addLayer("b", { // "b" for Baristas
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) {
-                return new Decimal(1.25).pow(x);
+                // Your current training level multiplier formula (1.25 ^ level)
+                let baseEffect = new Decimal(1.25).pow(x);
+                
+                // --- 🌟 MANUALLY LINK COFFEE UPGRADE 43 ---
+                // If they bought the upgrade in layer 'c', multiply your training power!
+                if (hasUpgrade('c', 43)) {
+                    baseEffect = baseEffect.times(upgradeEffect('c', 43));
+                }
+                
+                return baseEffect;
             },
             unlocked() {
                 return hasMilestone('b', 0)
             }
+        },
+        12: {
+            title: "Advanced Frothing Technique",
+            cost(x) { 
+                // Costs 250 * (1.6 ^ level) Customers (slightly pricier than the first training)
+                return new Decimal(250).times(new Decimal(1.6).pow(x)) 
+            },
+            display() { 
+                return "Train your baristas in microfoam styling.\n\n" +
+                       "Level: " + formatWhole(player.b.buyables[this.id]) + "\n" +
+                       "Cost: " + format(this.cost()) + " Customers\n\n" +
+                       "Effect: Multiplies Milk by " + format(buyableEffect(this.layer, this.id)) + "x"
+            },
+            canAfford() { 
+                return player.p.customers.gte(this.cost()) 
+            },
+            buy() {
+                player.p.customers = player.p.customers.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(x) {
+                // --- EXPONENTIAL MATH FORMULA ---
+                // Gives a compounding 20% multiplier (1.20) per level purchased!
+                // Formula: 1.20 ^ Level
+                return new Decimal(1.20).pow(x);
+            },
+            unlocked() {
+                // Stays hidden until they cross the 1 Barista milestone
+                return hasMilestone('b', 1)
+            }
         }
+    
+
     },
     branches: [
         "c", // Connects this layer directly to the Coffee Cups layer ('c')!
         "p" // Connects this layer directly to the Popularity layer ('p')!
+    ],
+    hotkeys: [
+        {key: "b", description: "B: Reset for Baristas", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown() { return true }
 })

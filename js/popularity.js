@@ -15,7 +15,7 @@ addLayer("p", {
     baseAmount() {return player.c.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     base: 1.1, // Base for the exponent of the static formula
-    exponent: 1.5, // Prestige currency exponent
+    exponent: 1.45, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         return mult
@@ -32,12 +32,9 @@ addLayer("p", {
             // 2. ONLY apply the upgrades meant to boost Customers (13 and 22)
             if (hasUpgrade('p', 13)) customerGain = customerGain.times(upgradeEffect('p', 13));
             if (hasUpgrade('c', 22)) customerGain = customerGain.times(upgradeEffect('c', 22));
-            if (hasUpgrade('c', 23)) {
-                customerGain = customerGain.times(upgradeEffect('c', 23));
-            }
-            if (hasUpgrade('c', 42)) {
-                customerGain = customerGain.times(upgradeEffect('c', 42));
-            }
+            if (hasUpgrade('c', 23)) {customerGain = customerGain.times(upgradeEffect('c', 23))}
+            if (hasUpgrade('c', 42)) {customerGain = customerGain.times(upgradeEffect('c', 42))}
+            if (hasUpgrade('c', 45)) {customerGain = customerGain.times(upgradeEffect('c', 45))}
 
             // 3. Add to total balance
             player.p.customers = player.p.customers.add(customerGain.times(diff));
@@ -60,6 +57,7 @@ addLayer("p", {
             if (hasUpgrade('c', 23)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 23));
 
             if (hasUpgrade('c', 42)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 42));
+            if (hasUpgrade('c', 45)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 45));
 
             return "(+" + format(gainPerSecond) + "/sec)"
         }],
@@ -81,7 +79,7 @@ addLayer("p", {
             done() { 
                 return player.p.customers.gte(1e6) 
             },
-            effectDescription: "Popularity and Barista no longer reset Row 1 Coffee upgrades.",
+            effectDescription: "Popularity and Barista no longer reset Row 1 Coffee Cups upgrades.",
         },
     },
 
@@ -142,6 +140,40 @@ addLayer("p", {
             unlocked() {
                 return hasUpgrade('p', 12)
             },
+        },
+        14: {
+            title: "Viral Marketing",
+            description: "THEY NEED SOME MILK!!!",
+            cost: new Decimal(1.5e5), // Costs 150,000 Customers
+            effect() {
+                return player[this.layer].customers.add(1).pow(0.21);
+            },
+            effectDisplay() { 
+                return format(upgradeEffect(this.layer, this.id)) + "x" 
+            },
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                     
+            currencyLocation() { return player.p }, 
+            unlocked() { return hasUpgrade('p', 13) }, // Chains cleanly after upgrade 13!
+        },
+        15: {
+            title: "Franchise Phenomenon",
+            description: "Customers like BEANSS so much now.",
+            cost: new Decimal(2500), // Costs 2,500 Customers (A solid mid-to-late goal)
+            effect() {
+                // Formula: (Customers ^ 0.4) + 1
+                // When you have 10,000 customers, this will give a massive ~40x boost to Beans!
+                return player[this.layer].customers.add(1).pow(0.47);
+            },
+            effectDisplay() { 
+                return format(upgradeEffect(this.layer, this.id)) + "x" 
+            },
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                     
+            currencyLocation() { return player.p }, 
+            unlocked() { return hasUpgrade('p', 14) }, // Chains perfectly after 14
         },
     }
     

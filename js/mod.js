@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Coffee Shop",
 	author: "Moosiqe",
 	pointsName: "Beans",
-	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js"],
+	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -58,16 +58,13 @@ function getPointGen() {
 		// This will boost directly Beans based on Customers 
     //}
 	if (hasUpgrade('p', 11)) gain = gain.times(upgradeEffect('p', 11))
+	if (hasUpgrade('p', 15)) {gain = gain.times(upgradeEffect('p', 15))}
 
 	// --- Barista Upgrades ---
-	if (hasMilestone('b', 0)) {
-		gain = gain.times(buyableEffect('b', 11))
-	}
+	if (hasMilestone('b', 0)) {gain = gain.times(buyableEffect('b', 11))}
 
 	// --- Milk Upgrades ---
-	if (hasUpgrade('c', 41)) {
-		gain = gain.times(upgradeEffect('c', 41))
-	}
+	if (hasUpgrade('c', 41)) {gain = gain.times(upgradeEffect('c', 41))}
     
 	return gain
 }

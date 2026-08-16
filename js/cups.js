@@ -5,19 +5,9 @@ addLayer("c", {
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
-        milk: new Decimal(0), // Tracks the number of Milk Pots the player has
+        milk: new Decimal(0), // Tracks the number of Milk the player has
         milkTabUnlocked: false,
     }},
-    keep: {
-        // This function tells the engine what to preserve during a reset
-        custom(layer) {
-            // If the reset is triggered by Layer 'p' (Popularity) or Layer 'b' (Baristas)
-            if (layer == "p" || layer == "b") {
-                // Return a list of the exact variable names you want to save!
-                return ["milk", "upgrades"[4, 5]]; // This will preserve the Milk count and any upgrades in the 40+ grid
-            }
-        }
-    },
     color: "#56514b",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
     resource: "Coffee Cups", // Name of prestige currency
@@ -34,7 +24,7 @@ addLayer("c", {
     },
 
     update(diff) {
-       if (hasUpgrade('c', 24)) { 
+       if (player.c.milkTabUnlocked) {  
             
             // 1. Calculate base milk gain
             let milkGain = player.points.add(1).pow(0.125);
@@ -42,6 +32,14 @@ addLayer("c", {
             // --- UPDATED: Apply your Barista-powered Upgrade 25 boost ---
             if (hasUpgrade('c', 25)) {
                 milkGain = milkGain.times(upgradeEffect('c', 25));
+            }
+            milkGain = milkGain.times(buyableEffect('b', 12));
+
+            if (hasUpgrade('c', 44)) {
+                milkGain = milkGain.times(upgradeEffect('c', 44));
+            }
+            if (hasUpgrade('p', 14)) {
+                milkGain = milkGain.times(upgradeEffect('p', 14));
             }
             
             // 2. Add smoothly to the total milk balance
@@ -70,12 +68,19 @@ addLayer("c", {
                 ["display-text", function() {
                     let milkGain = player.points.add(1).pow(0.125);
                     // If you have special upgrades later to speed up milk, multiply milkGain here!
-                    return "You have <h2 style='color: #FDFEFE; text-shadow: 0 0 5px #BDC3C7;'>" + format(player.c.milk) + "</h2> Milk."
                     if (hasUpgrade('c', 25)) milkGain = milkGain.times(upgradeEffect('c', 25));
+                    milkGain = milkGain.times(buyableEffect('b', 12));
+                    return "You have <h2 style='color: #FDFEFE; text-shadow: 0 0 5px #BDC3C7;'>" + format(player.c.milk) + "</h2> Milk."
                 }],
                 
                 ["display-text", function() {
                     let milkGain = player.points.add(1).pow(0.125);
+                    
+                     if (hasUpgrade('c', 25)) milkGain = milkGain.times(upgradeEffect('c', 25));
+                    milkGain = milkGain.times(buyableEffect('b', 12));
+
+                    if (hasUpgrade('c', 44)) milkGain = milkGain.times(upgradeEffect('c', 44));
+                    if (hasUpgrade('p', 14)) milkGain = milkGain.times(upgradeEffect('p', 14));
                     return "(+" + format(milkGain) + "/sec)"
                 }],
                 
@@ -91,33 +96,30 @@ addLayer("c", {
     ],
     layerShown(){return true},
 
-   doReset(resettingLayer) {
+    doReset(resettingLayer) {
+        // 1. CRITICAL EXCEPTION: If the reset is coming from Stars ('s'), wipe EVERYTHING!
+        if (resettingLayer == "s") {
+            player.c.points = new Decimal(0);         // Wipe Coffee Cups
+            player.c.milk = new Decimal(0);           // Reset Milk back to 0!
+            player.c.milkTabUnlocked = false;         // Lock the Milk Station tab button back up!
+            player.c.upgrades = [];                   // Wipe ALL upgrades (including Row 4 milk ones!)
+            return;                                   // Stop running the function here so it cleans house.
+        }
+
+        // 2. Otherwise, if it's a standard Row 1 reset (Popularity 'p' or Baristas 'b'), keep Milk safe!
         if (layers[resettingLayer].row > this.row) {
-            player.c.points = new Decimal(0); // Wipe your Coffee Cups normally
-            
-            // --- UPDATED SMART UPGRADE FILTER ---
-            player.c.upgrades = player.c.upgrades.filter(upg => {
-                let upgradeID = String(upg);
-                
-                // 1. Always keep Row 4 (Milk upgrades)
-                if (upgradeID.startsWith('4')) return true;
-                
-                // 2. NEW: If they have Popularity Milestone 1, also keep Row 1 upgrades!
-                if (hasMilestone('p', 1) && upgradeID.startsWith('1')) return true;
-                
-                // Otherwise, wipe the upgrade (Row 2 and Row 3)
-                return false;
-            });
-            
-            // Your milk variables and tracker switches remain totally untouched!
+            player.c.points = new Decimal(0); 
+            player.c.upgrades = player.c.upgrades.filter(upg => String(upg).startsWith('4'));
         }
     },
 
     canBuyMax() {
-    return hasMilestone('p', 1); // Checks layer 'p', milestone 1
+    return hasMilestone('p', 0); // Checks layer 'p', milestone 1
     },
     
     upgrades: {
+        rows: 4, 
+        cols: 5, 
         // --- COFFEE CUPS UPGRADES ---
         11: {
             title: "Larger Cups",
@@ -173,7 +175,7 @@ addLayer("c", {
         },
         22: {
             title: "Expert Supervision",
-            description: "Barista Training level boosts Customers.",
+            description: "Barista Efficiency level boosts Customers.",
             cost: new Decimal(12), 
             effect() {
                 // 1. Grab the current level of buyable 11 inside the Baristas layer ('b')
@@ -220,7 +222,7 @@ addLayer("c", {
         25: {
             title: "Expert Frothing",
             description: "Baristas boost Milk.",
-            cost: new Decimal(18), // Costs 25 Coffee Cups
+            cost: new Decimal(18),  
             effect() {
                 // formula: (Baristas * 0.5) + 1. 
                 // Every hired Barista adds a flat +50% speed boost to your milk churning!
@@ -257,7 +259,7 @@ addLayer("c", {
         42: {
             title: "Creamy Froth",
             description: "Milk multiplies Customers.",
-            cost: new Decimal(3e4),
+            cost: new Decimal(3e4), // 30,000 Milk
             effect() {
                 // formula: (Milk ^ 0.35) + 1.
                 // Keeps it dynamic and balanced so your customer counts climb steadily!
@@ -271,6 +273,58 @@ addLayer("c", {
             currencyLayer: "c",
             currencyLocation() { return player.c },
             unlocked() { return hasUpgrade('c', 41) }
+        },
+        43: {
+            title: "Pasteurization Pipeline",
+            description: "Milk multiplies the effectiveness of Barista Efficiency.",
+            cost: new Decimal(2.5e5), // Costs 250,000 Milk
+            effect() {
+                // Formula: (Milk Pots ^ 0.2) + 1
+                // Steady, clean multiplier to power up your workers
+                return player[this.layer].milk.add(1).pow(0.025);
+            },
+            effectDisplay() { 
+                return format(upgradeEffect(this.layer, this.id)) + "x" 
+            },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasUpgrade('c', 42) } // Chains after 42!
+        },
+        44: {
+            title: "Chilled Storage Tanks",
+            description: "Customers multiply Milk.",
+            cost: new Decimal(5e6), // Costs 5,000,000 Milk
+            effect() {
+                 return player.p.customers.add(1).pow(0.22);
+            },
+            effectDisplay() { 
+                return format(upgradeEffect(this.layer, this.id)) + "x" 
+            },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasUpgrade('c', 43) } // Chains after 43!
+        },
+        45: {
+            title: "You may order now!",
+            description: "Milk multiplies Customers.",
+            cost: new Decimal(1e10), // Costs 10,000,000,000 Milk 
+            effect() {
+                // Formula: (Milk Pots ^ 0.3) + 1
+                // Clean, smooth scaling that accelerates rapidly in the millions!
+                return player[this.layer].milk.add(1).pow(0.30);
+            },
+            effectDisplay() { 
+                return format(upgradeEffect(this.layer, this.id)) + "x" 
+            },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasUpgrade('c', 44) } // Chains cleanly after 44
         },
     },
     
