@@ -270,7 +270,7 @@ addLayer("c", {
             currencyInternalName: "milk",
             currencyLayer: "c",
             currencyLocation() { return player.c },
-            unlocked() { return player.c.milkTabUnlocked } 
+            unlocked() { return hasUpgrade('c', 41) }
         },
     },
     

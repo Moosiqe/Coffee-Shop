@@ -9,7 +9,7 @@ addLayer("p", {
         customers: new Decimal(0),
     }},
     color: "#5cd238",
-    requires: new Decimal(1), // Can be a function that takes requirement increases into account
+    requires: new Decimal(10), // Can be a function that takes requirement increases into account
     resource: "Popularity", // Name of prestige currency
     baseResource: "Coffee Cups", // Name of resource prestige is based on
     baseAmount() {return player.c.points}, // Get the current amount of baseResource
