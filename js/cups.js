@@ -116,10 +116,7 @@ addLayer("c", {
     },
 
     canBuyMax() {
-    return hasMilestone('p', 0);
-    },
-    canBuyMax() {
-    return hasMilestone('s', 0);
+    return hasMilestone('p' || 's', 0);
     },
     
     upgrades: {
