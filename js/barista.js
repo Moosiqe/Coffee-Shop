@@ -18,6 +18,10 @@ addLayer("b", { // "b" for Baristas
 
     gainMult() { return new Decimal(1) },
     gainExp() { return new Decimal(1) },
+    
+    canBuyMax() { 
+        return hasMilestone('s', 0); 
+    },
 
     // This handles the display on the screen
     tabFormat: [
@@ -123,8 +127,7 @@ addLayer("b", { // "b" for Baristas
 
     },
     branches: [
-        "c", // Connects this layer directly to the Coffee Cups layer ('c')!
-        "p" // Connects this layer directly to the Popularity layer ('p')!
+        "c", "p", "s"
     ],
     hotkeys: [
         {key: "b", description: "B: Reset for Baristas", onPress(){if (canReset(this.layer)) doReset(this.layer)}},

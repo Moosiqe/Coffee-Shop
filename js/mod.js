@@ -2,12 +2,22 @@ let modInfo = {
 	name: "Coffee Shop",
 	author: "Moosiqe",
 	pointsName: "Beans",
-	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js"],
+	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js", "lab.js", "tempRight.js"],
 
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (1), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
+}
+
+let rowLayout = {
+    0: ["c"],       // Row 0: Coffee Cups (Centered)
+    1: ["p", "b"],  // Row 1: Popularity and Baristas (Framing the center)
+    
+    // 🌟 THE FIX: Grouping the row elements as an explicit 3-column layout map
+    // We leave an empty string placeholder on the left. This forces the engine's 
+    // centering calculations to treat 's' as the exact horizontal axis center point!
+    2: ["", "s", "l"] 
 }
 
 // Set your version in num and name
@@ -65,6 +75,17 @@ function getPointGen() {
 
 	// --- Milk Upgrades ---
 	if (hasUpgrade('c', 41)) {gain = gain.times(upgradeEffect('c', 41))}
+
+	// --- Lab Upgrades ---
+	if (buyableEffect('l', 51)) {
+		gain = gain.times(buyableEffect('l', 51))
+	}
+
+	// --- Star Upgrades ---
+	if (player.s.points.gt(0)) {
+		let starExponent = player.s.points.times(0.03).add(1);
+		gain = gain.pow(starExponent);
+	}
     
 	return gain
 }

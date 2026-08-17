@@ -41,6 +41,7 @@ addLayer("c", {
             if (hasUpgrade('p', 14)) {
                 milkGain = milkGain.times(upgradeEffect('p', 14));
             }
+            if (buyableEffect('l', 53)) milkGain = milkGain.times(buyableEffect('l', 53));
             
             // 2. Add smoothly to the total milk balance
             player.c.milk = player.c.milk.add(milkGain.times(diff));
@@ -74,13 +75,14 @@ addLayer("c", {
                 }],
                 
                 ["display-text", function() {
-                    let milkGain = player.points.add(1).pow(0.125);
+                    let milkGain = player.points.add(1).pow(0.125)
                     
-                     if (hasUpgrade('c', 25)) milkGain = milkGain.times(upgradeEffect('c', 25));
-                    milkGain = milkGain.times(buyableEffect('b', 12));
+                     if (hasUpgrade('c', 25)) milkGain = milkGain.times(upgradeEffect('c', 25))
+                    milkGain = milkGain.times(buyableEffect('b', 12))
 
-                    if (hasUpgrade('c', 44)) milkGain = milkGain.times(upgradeEffect('c', 44));
-                    if (hasUpgrade('p', 14)) milkGain = milkGain.times(upgradeEffect('p', 14));
+                    if (hasUpgrade('c', 44)) milkGain = milkGain.times(upgradeEffect('c', 44))
+                    if (hasUpgrade('p', 14)) milkGain = milkGain.times(upgradeEffect('p', 14))
+                    if (buyableEffect('l', 53)) {milkGain = milkGain.times(buyableEffect('l', 53))}
                     return "(+" + format(milkGain) + "/sec)"
                 }],
                 
@@ -114,7 +116,10 @@ addLayer("c", {
     },
 
     canBuyMax() {
-    return hasMilestone('p', 0); // Checks layer 'p', milestone 1
+    return hasMilestone('p', 0);
+    },
+    canBuyMax() {
+    return hasMilestone('s', 0);
     },
     
     upgrades: {

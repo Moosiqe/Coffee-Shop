@@ -1,6 +1,7 @@
 addLayer("p", {
     name: "Popularity", // This is optional, only used in a few places, If absent it just uses the layer id.
     symbol: "P", // This appears on the layer's node. Default is the id with the first letter capitalized
+    row: 3,
     position: 0, // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
     startData() { return {
         visible: true,
@@ -23,6 +24,9 @@ addLayer("p", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
+    canBuyMax() { 
+        return hasMilestone('s', 0); 
+    },
 
     update(diff) {
         if (player.p.unlocked) { 
@@ -30,11 +34,12 @@ addLayer("p", {
             let customerGain = player.p.points.pow(new Decimal(1.38)); 
             
             // 2. ONLY apply the upgrades meant to boost Customers (13 and 22)
-            if (hasUpgrade('p', 13)) customerGain = customerGain.times(upgradeEffect('p', 13));
-            if (hasUpgrade('c', 22)) customerGain = customerGain.times(upgradeEffect('c', 22));
+            if (hasUpgrade('p', 13)) customerGain = customerGain.times(upgradeEffect('p', 13))
+            if (hasUpgrade('c', 22)) customerGain = customerGain.times(upgradeEffect('c', 22))
             if (hasUpgrade('c', 23)) {customerGain = customerGain.times(upgradeEffect('c', 23))}
             if (hasUpgrade('c', 42)) {customerGain = customerGain.times(upgradeEffect('c', 42))}
             if (hasUpgrade('c', 45)) {customerGain = customerGain.times(upgradeEffect('c', 45))}
+            if (buyableEffect('l', 52)) customerGain = customerGain.times(buyableEffect('l', 52))
 
             // 3. Add to total balance
             player.p.customers = player.p.customers.add(customerGain.times(diff));
@@ -58,6 +63,9 @@ addLayer("p", {
 
             if (hasUpgrade('c', 42)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 42));
             if (hasUpgrade('c', 45)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 45));
+            if (buyableEffect('l', 52)) {
+                gainPerSecond = gainPerSecond.times(buyableEffect('l', 52));
+            }
 
             return "(+" + format(gainPerSecond) + "/sec)"
         }],
@@ -74,14 +82,6 @@ addLayer("p", {
             },
             effectDescription: "Unlock bulk-buying for Coffee Cups.",
         },
-        1: {
-            requirementDescription: "1M Customers",
-            done() { 
-                return player.p.customers.gte(1e6) 
-            },
-            effectDescription: "Popularity and Barista no longer reset Row 1 Coffee Cups upgrades.",
-            unlocked() { return hasMilestone('p', 0) },
-        },
     },
 
     row: 1, // Row the layer is in on the tree (0 is the first row)
@@ -91,7 +91,7 @@ addLayer("p", {
     layerShown(){return true},
 
     branches: [
-        "c" // Connects this layer directly to the Coffee Cups layer ('c')!
+        "c", "s" // Connects this layer directly to the Coffee Cups layer ('c')!
     ],
     
     upgrades: {
