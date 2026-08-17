@@ -259,7 +259,7 @@ addLayer("c", {
         42: {
             title: "Creamy Froth",
             description: "Milk multiplies Customers.",
-            cost: new Decimal(3e4), // 30,000 Milk
+            cost: new Decimal(2e4), // 20,000 Milk
             effect() {
                 // formula: (Milk ^ 0.35) + 1.
                 // Keeps it dynamic and balanced so your customer counts climb steadily!
@@ -311,7 +311,7 @@ addLayer("c", {
         45: {
             title: "You may order now!",
             description: "Milk multiplies Customers.",
-            cost: new Decimal(1e10), // Costs 10,000,000,000 Milk 
+            cost: new Decimal(2e9), // Costs 10,000,000,000 Milk 
             effect() {
                 // Formula: (Milk Pots ^ 0.3) + 1
                 // Clean, smooth scaling that accelerates rapidly in the millions!

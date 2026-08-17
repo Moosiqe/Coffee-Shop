@@ -6,6 +6,7 @@ addLayer("s", { // "s" for Stars
     startData() { return {
         unlocked: true,
         points: new Decimal(0), // Tracks CURRENT Stars earned
+        //starsUnlocked: false,
     }},
     color: "#F1C40F", // Bright golden star yellow
     requires: new Decimal(1e50), // 
@@ -82,6 +83,9 @@ addLayer("s", { // "s" for Stars
     ],
 
     layerShown() { 
-        return player.c.milkTabUnlocked; 
+        if (player.c.points.gte(35) || player.s.points.gte(1)) {
+            player.c.starsUnlocked = true; // Permanently lock the node onto the screen!
+        }
+        return player.c.starsUnlocked; // Only show the layer if the player has 35 Coffee Cups or has unlocked Stars
     }
 })

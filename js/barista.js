@@ -44,6 +44,7 @@ addLayer("b", { // "b" for Baristas
                 return player.b.points.gte(3) // Checks current Baristas
             },
             effectDescription: "Unlock the Advanced Frothing Technique buyable.",
+            unlocked() { return hasMilestone('b', 0) },
         }
     },
 
@@ -55,8 +56,7 @@ addLayer("b", { // "b" for Baristas
         11: {
             title: "Barista Efficiency",
             cost(x) { 
-                // Costs 100 * (1.5 ^ level) Customers
-                return new Decimal(100).times(new Decimal(1.75).pow(x)) 
+                return new Decimal(50).times(new Decimal(1.75).pow(x)) 
             },
             display() { 
                 return "Train your baristas to work faster.\n\n" +

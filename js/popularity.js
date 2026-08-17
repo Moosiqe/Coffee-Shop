@@ -80,6 +80,7 @@ addLayer("p", {
                 return player.p.customers.gte(1e6) 
             },
             effectDescription: "Popularity and Barista no longer reset Row 1 Coffee Cups upgrades.",
+            unlocked() { return hasMilestone('p', 0) },
         },
     },
 
@@ -155,12 +156,12 @@ addLayer("p", {
             currencyInternalName: "customers",      
             currencyLayer: "p",                     
             currencyLocation() { return player.p }, 
-            unlocked() { return hasUpgrade('p', 13) }, // Chains cleanly after upgrade 13!
+            unlocked() { return hasUpgrade('c', 41) }, // Chains cleanly after upgrade 41!
         },
         15: {
             title: "Franchise Phenomenon",
             description: "Customers like BEANSS so much now.",
-            cost: new Decimal(2500), // Costs 2,500 Customers (A solid mid-to-late goal)
+            cost: new Decimal(5e11), // Costs 2,500 Customers (A solid mid-to-late goal)
             effect() {
                 // Formula: (Customers ^ 0.4) + 1
                 // When you have 10,000 customers, this will give a massive ~40x boost to Beans!
