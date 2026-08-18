@@ -79,7 +79,7 @@ addLayer("l", { // "l" for Espresso Lab
         11: {
             title: "Extract Research Data (Beans)",
             cost(x) { 
-                return new Decimal(1e40).times(new Decimal(1e3).pow(x)) 
+                return new Decimal(1e10).times(new Decimal(1e3).pow(x)) 
             },
             display() { 
                 return "Centrifuge your standard bean reserves into scientific data.\n\n" +
@@ -102,7 +102,7 @@ addLayer("l", { // "l" for Espresso Lab
         12: {
             title: "Extract Research Data (Milk)",
             cost(x) { 
-                return new Decimal(1e10).times(new Decimal(1e2).pow(x)) 
+                return new Decimal(1e3).times(new Decimal(1e2).pow(x)) 
             },
             display() { 
                 return "Analyze your dairy station supply curves for new variables.\n\n" +
@@ -210,7 +210,7 @@ addLayer("l", { // "l" for Espresso Lab
         52: {
             title: "Velvet Flat White",
             cost(x) { 
-                return new Decimal(3).times(new Decimal(1.35).pow(x)).floor();
+                return new Decimal(3).times(new Decimal(1.25).pow(x)).floor();
             },
             effect(x) {
                 return new Decimal(2.5).pow(x);
@@ -237,7 +237,7 @@ addLayer("l", { // "l" for Espresso Lab
         53: {
             title: "Nitro Cold Brew",
             cost(x) { 
-                return new Decimal(4).times(new Decimal(1.55).pow(x)).floor();
+                return new Decimal(4).times(new Decimal(1.25).pow(x)).floor();
             },
             effect(x) {
                 return new Decimal(2.5).pow(x);

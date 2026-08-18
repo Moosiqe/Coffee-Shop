@@ -23,8 +23,8 @@ addLayer("s", { // "s" for Stars
     cost(x) {
         let currentStars = new Decimal(x);
 
-        if (currentStars.eq(0)) return new Decimal(1e50);
-        if (currentStars.eq(1)) return new Decimal(1e120);
+        if (currentStars.eq(0)) return new Decimal(5e49);
+        if (currentStars.eq(1)) return new Decimal(2.5e120);
         if (currentStars.eq(2)) return new Decimal(1e210);
         if (currentStars.eq(3)) return new Decimal(1e340);
         if (currentStars.eq(4)) return new Decimal(1e500);
@@ -86,7 +86,7 @@ addLayer("s", { // "s" for Stars
         0: {
             requirementDescription: "⭐ 1 Restaurant Star",
             done() { return player.s.points.gte(1) },
-            effectDescription: `- Unlock The Espresso Lab <br> - Auto-Buy Row 1-2 Coffee Cups <br> - +^0.03 Beans per Star <br> - BuyMax Popularity and Baristas`,
+            effectDescription: `- Unlock The Espresso Lab <br> - Auto-Buy Row 1-2 Coffee Cups <br> - +^0.03 Beans per Star <br> - Bulk-Buy Coffee Cups, Popularity, and Baristas <br> - Coffee Cups no longer spend Beans`,
         },
         1: {
             requirementDescription: "⭐⭐ 2 Restaurant Stars",

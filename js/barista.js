@@ -18,7 +18,7 @@ addLayer("b", { // "b" for Baristas
 
     gainMult() { return new Decimal(1) },
     gainExp() { return new Decimal(1) },
-    
+
     canBuyMax() { 
         return hasMilestone('s', 0); 
     },
@@ -30,7 +30,8 @@ addLayer("b", { // "b" for Baristas
         "blank",
         "milestones", // Draws your native milestone panel
         "blank",
-        "buyables"    // Draws your buyables grid
+        "buyables",
+        "blank"    // Draws your buyables grid
     ],
 
     // --- MILESTONES CHECKING CURRENT BARISTAS ---

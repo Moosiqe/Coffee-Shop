@@ -22,6 +22,12 @@ addLayer("c", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
+    resetsNothing() { 
+        return hasMilestone('s', 0); 
+    },
+    canBuyMax() { 
+        return hasMilestone('s', 0) || hasMilestone('p', 0); 
+    },
 
     update(diff) {
        if (player.c.milkTabUnlocked) {  
@@ -113,10 +119,6 @@ addLayer("c", {
             player.c.points = new Decimal(0); 
             player.c.upgrades = player.c.upgrades.filter(upg => String(upg).startsWith('4'));
         }
-    },
-
-    canBuyMax() {
-    return hasMilestone('p' || 's', 0);
     },
     
     upgrades: {

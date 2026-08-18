@@ -51,7 +51,7 @@ addLayer("p", {
         "prestige-button",
         "blank",
         ["display-text", function() { 
-            return "You have <h2 style='color: #3498DB'>" + format(player.p.customers) + "</h2> active Customers." 
+            return "You have <h2 style='color: #3498DB'>" + format(player.p.customers) + "</h2> Customers." 
         }],
         ["display-text", function() { 
             let gainPerSecond = player.p.points.pow(new Decimal(1.38)); 
