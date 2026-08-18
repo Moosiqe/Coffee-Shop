@@ -25,7 +25,7 @@ addLayer("s", { // "s" for Stars
 
         if (currentStars.eq(0)) return new Decimal(5e49);
         if (currentStars.eq(1)) return new Decimal(2.5e120);
-        if (currentStars.eq(2)) return new Decimal(1e210);
+        if (currentStars.eq(2)) return new Decimal("5e499");
         if (currentStars.eq(3)) return new Decimal(1e340);
         if (currentStars.eq(4)) return new Decimal(1e500);
 
@@ -91,22 +91,26 @@ addLayer("s", { // "s" for Stars
         1: {
             requirementDescription: "⭐⭐ 2 Restaurant Stars",
             done() { return player.s.points.gte(2) },
-            effectDescription: "Unlock something cool (Idea Slot 2).",
+            effectDescription: "- A ton of new upgrades everywhere <br> - New Milestones for Popularity and Baristas <br> - Auto-Buy first two Barista Buyables <br> - ",
+            unlocked() {return hasMilestone('s', 0)},
         },
         2: {
             requirementDescription: "⭐⭐⭐ 3 Restaurant Stars",
             done() { return player.s.points.gte(3) },
             effectDescription: "Unlock something cool (Idea Slot 3).",
+            unlocked() {return hasMilestone('s', 1)},
         },
         3: {
             requirementDescription: "⭐⭐⭐⭐ 4 Restaurant Stars",
             done() { return player.s.points.gte(4) },
             effectDescription: "Unlock something cool (Idea Slot 4).",
+            unlocked() {return hasMilestone('s', 2)},
         },
         4: {
             requirementDescription: "⭐⭐⭐⭐⭐ 5 Restaurant Stars",
             done() { return player.s.points.gte(5) },
             effectDescription: "The Ultimate Café. You have mastered the coffee universe!",
+            unlocked() {return hasMilestone('s', 3)},
         }
     },
 

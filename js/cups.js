@@ -239,6 +239,64 @@ addLayer("c", {
                 return hasUpgrade('c', 41) 
             },
         },
+        31: {
+            title: "Caffeine Lab Synergy",
+            description: "Total Research Points multiply Beans.",
+            cost: new Decimal(92), // Wrapped in quotes for absolute safety
+            unlocked() { return hasMilestone('s', 1) }, // 🌟 Requires Star Milestone 1 (2 Stars)
+            effect() { 
+                 let totalRPCreated = getBuyableAmount('l', 11).add(getBuyableAmount('l', 12));
+                // Compounding Formula: 1.05 raised to the power of total RP created
+                return new Decimal(1.05).pow(totalRPCreated);
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        32: {
+            title: "Crowd Catalysis",
+            description: "Customers boost Bean gain.",
+            cost: new Decimal(96),
+            unlocked() { return hasUpgrade('c', 31) },
+            effect() { 
+                return player.p.customers.add(1).pow(0.08); 
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        33: {
+            title: "BEANZ TAKE OVER",
+            description: "Beans multiply Beans.",
+            cost: new Decimal(105),
+            unlocked() { return hasUpgrade('c', 32) },
+            effect() {
+                return player.points.add(1).pow(0.05)
+            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            
+        },
+        34: {
+            title: "Scientific Franchise",
+            description: "Customers are multiplied by Classic Macchiato recipe level.",
+            cost: new Decimal(130),
+            unlocked() { return hasUpgrade('c', 33) },
+            effect() {
+                let macchLevel = getBuyableAmount('l', 51);
+                return macchLevel.times(2).add(1); 
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        35: {
+            title: "The Grand Espresso",
+            description: "Every upgrade purchased x1.01 boost Espresso Lab Recipes.",
+            cost: new Decimal(200),
+            unlocked() { return hasUpgrade('c', 34) }, // Star Milestone 1 (2 Stars)
+            effect() {
+                let totalUpgs = (player.c.upgrades?.length || 0) + 
+                                (player.p.upgrades?.length || 0) + 
+                                (player.b.upgrades?.length || 0);
+                // Compounding math: 1.02 ^ Total Upgrades
+                return new Decimal(1.01).pow(totalUpgs);
+            },
+            effectDisplay() { return "+" + format(this.effect().sub(1).times(100)) + "%" }
+        },
         // --- MILK UPGRADES ---
         41: {
             title: "Condensed Creamer",

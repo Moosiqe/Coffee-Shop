@@ -23,6 +23,23 @@ addLayer("b", { // "b" for Baristas
         return hasMilestone('s', 0); 
     },
 
+     update(diff) {
+        // --- STAR MILESTONE 1: AUTOMATED BARISTA HIRING ---
+        // Automatically purchases Buyable 11 and Buyable 12 if affordable!
+        if (hasMilestone('s', 1)) {
+            
+            // 🧑‍🍳 Auto-Buy Buyable 11
+            // 🌟 FIXED: Using layers[layer].buyables[id].canAfford() to check parameters natively
+            if (layers[this.layer].buyables[11].canAfford()) {
+                buyBuyable('b', 11);
+            }
+
+            // ☕ Auto-Buy Buyable 12
+            if (layers[this.layer].buyables[12].canAfford()) {
+                buyBuyable('b', 12);
+            }
+        }
+    },
     // This handles the display on the screen
     tabFormat: [
         "main-display",
@@ -44,13 +61,21 @@ addLayer("b", { // "b" for Baristas
             effectDescription: "Unlock the Barista Efficiency buyable and a new Coffee Cups upgrade.",
         },
         1: {
-            requirementDescription: "3 Barista",
+            requirementDescription: "3 Baristas",
             done() { 
                 return player.b.points.gte(3) // Checks current Baristas
             },
             effectDescription: "Unlock the Advanced Frothing Technique buyable.",
             unlocked() { return hasMilestone('b', 0) },
-        }
+        },
+        2: {
+            requirementDescription: "11 Baristas",
+            done() { 
+                return player.b.points.gte(11) // Checks current Baristas
+            },
+            effectDescription: "Unlock ",
+            unlocked() {return hasMilestone('s', 1)},
+        },
     },
 
     // --- BUYABLE THAT COSTS CUSTOMERS & BOOSTS BEANS ---
@@ -73,9 +98,9 @@ addLayer("b", { // "b" for Baristas
                 return player.p.customers.gte(this.cost()) 
             },
             buy() {
-                // Deduct the cost from your Popularity layer's customers counter
-                player.p.customers = player.p.customers.sub(this.cost())
-                // Safely increments the buyable level inside the engine
+               if (!hasMilestone('s', 1)) {
+                    player.p.customers = player.p.customers.sub(this.cost());
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) {
@@ -110,7 +135,9 @@ addLayer("b", { // "b" for Baristas
                 return player.p.customers.gte(this.cost()) 
             },
             buy() {
-                player.p.customers = player.p.customers.sub(this.cost())
+                if (!hasMilestone('s', 1)) {
+                    player.p.customers = player.p.customers.sub(this.cost());
+                }
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) {

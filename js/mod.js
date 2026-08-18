@@ -46,6 +46,16 @@ function canGenPoints(){
 	return true
 }
 
+function getGameSpeedMod() {
+    let speed = 1;
+    if (hasUpgrade('c', 35)) {
+        // Adds +5% game speed for every 10 Research Points owned
+        let bonus = player.l.researchPoints.div(10).times(0.02);
+        speed += bonus.toNumber();
+    }
+    return speed;
+}
+
 // Calculate points/sec!
 function getPointGen() {
 	if(!canGenPoints())
@@ -60,6 +70,9 @@ function getPointGen() {
 	if (hasUpgrade('c', 15)) gain = gain.times(upgradeEffect('c', 15))
 	if (hasUpgrade('c', 21)) gain = gain.times(5)
 	if (hasUpgrade('c', 22)) gain = gain.times(upgradeEffect('c', 22))
+	if (hasUpgrade('c', 31)) gain = gain.times(upgradeEffect('c', 31))
+	if (hasUpgrade('c', 32)) gain = gain.times(upgradeEffect('c', 32))
+	if (hasUpgrade('c', 33)) gain = gain.times(upgradeEffect('c', 33))
 	
 	// --- Popularity Upgrades & other ---
 	//if (player.p.unlocked) {

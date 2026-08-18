@@ -8,6 +8,7 @@ addLayer("p", {
         unlocked: false,
 		points: new Decimal(0),
         customers: new Decimal(0),
+        vipCustomers: new Decimal(0),
     }},
     color: "#5cd238",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
@@ -40,6 +41,16 @@ addLayer("p", {
             if (hasUpgrade('c', 42)) {customerGain = customerGain.times(upgradeEffect('c', 42))}
             if (hasUpgrade('c', 45)) {customerGain = customerGain.times(upgradeEffect('c', 45))}
             if (buyableEffect('l', 52)) customerGain = customerGain.times(buyableEffect('l', 52))
+            if (hasUpgrade('c', 34)) {customerGain = customerGain.times(upgradeEffect('c', 34))}
+
+            if (hasMilestone('s', 1)) {
+                // Rule: VIP accumulation speed scales based on your current standard customer population!
+                // Formula: (Standard Customers ^ 0.25) / 100 per second. 
+                // This creates a smooth, balanced curve that naturally handles late-game inflation.
+                let vipGain = player.p.customers.add(1).pow(0.1).div(1e6);
+                
+                player.p.vipCustomers = player.p.vipCustomers.add(vipGain.times(diff));
+            }
 
             // 3. Add to total balance
             player.p.customers = player.p.customers.add(customerGain.times(diff));
@@ -57,17 +68,21 @@ addLayer("p", {
             let gainPerSecond = player.p.points.pow(new Decimal(1.38)); 
             
             // Match the math exactly by only checking 13 and 22 here as well
-            if (hasUpgrade('p', 13)) gainPerSecond = gainPerSecond.times(upgradeEffect('p', 13));
-            if (hasUpgrade('c', 22)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 22));
-            if (hasUpgrade('c', 23)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 23));
+            if (hasUpgrade('p', 13)) gainPerSecond = gainPerSecond.times(upgradeEffect('p', 13))
+            if (hasUpgrade('c', 22)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 22))
+            if (hasUpgrade('c', 23)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 23))
 
-            if (hasUpgrade('c', 42)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 42));
-            if (hasUpgrade('c', 45)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 45));
-            if (buyableEffect('l', 52)) {
-                gainPerSecond = gainPerSecond.times(buyableEffect('l', 52));
-            }
-
+            if (hasUpgrade('c', 42)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 42))
+            if (hasUpgrade('c', 45)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 45))
+            if (buyableEffect('l', 52)) {gainPerSecond = gainPerSecond.times(buyableEffect('l', 52))}
+            if (hasUpgrade('c', 34)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 34));
             return "(+" + format(gainPerSecond) + "/sec)"
+        }],
+        ["display-text", function() {
+            if (!hasMilestone('p', 1)) return ""; 
+            
+            let currentVipGain = player.p.customers.add(1).pow(0.1).div(1e6);
+            return "You have <h3 style='color: #F39C12; display: inline;'>" + format(player.p.vipCustomers) + "</h3> VIP Customers (+" + format(currentVipGain) + "/sec)"
         }],
         "milestones",
         "blank",
@@ -81,6 +96,14 @@ addLayer("p", {
                 return player.p.customers.gte(1e3) // Checks your 'p' layer customers!
             },
             effectDescription: "Unlock bulk-buying for Coffee Cups.",
+        },
+        1: {
+            requirementDescription: "1e50 Customers",
+            done() { 
+                return player.p.customers.gte(1e50) // Checks your 'p' layer customers!
+            },
+            effectDescription: "Unlock VIP Customers.",
+            unlocked() {return hasMilestone('p', 1)},
         },
     },
 
@@ -111,7 +134,7 @@ addLayer("p", {
         },
         12: {
             title: "Beans for Days",
-            description: "Unlock new upgrades for Coffee Cups.",
+            description: "Unlock a new upgrade for Coffee Cups.",
             cost: new Decimal(100),
 
             currencyDisplayName: "Customers",       // The name shown when you hover over the cost

@@ -186,7 +186,9 @@ addLayer("l", { // "l" for Espresso Lab
                 return new Decimal(1).times(new Decimal(1.25).pow(x)).floor();
             },
             effect(x) {
-                return new Decimal(3).pow(x);
+                let baseEffect = new Decimal(3).pow(x);
+            if (hasUpgrade('c', 35)) baseEffect = baseEffect.times(upgradeEffect('c', 35));
+            return baseEffect;
             },
             display() { 
                 let amt = getBuyableAmount(this.layer, this.id);
@@ -213,7 +215,9 @@ addLayer("l", { // "l" for Espresso Lab
                 return new Decimal(3).times(new Decimal(1.25).pow(x)).floor();
             },
             effect(x) {
-                return new Decimal(2.5).pow(x);
+                let baseEffect = new Decimal(2.5).pow(x);
+            if (hasUpgrade('c', 35)) baseEffect = baseEffect.times(upgradeEffect('c', 35));
+            return baseEffect;
             },
             display() { 
                 let amt = getBuyableAmount(this.layer, this.id);
@@ -240,7 +244,9 @@ addLayer("l", { // "l" for Espresso Lab
                 return new Decimal(4).times(new Decimal(1.25).pow(x)).floor();
             },
             effect(x) {
-                return new Decimal(2.5).pow(x);
+                let baseEffect = new Decimal(2.5).pow(x);
+            if (hasUpgrade('c', 35)) baseEffect = baseEffect.times(upgradeEffect('c', 35));
+            return baseEffect;
             },
             display() { 
                 let amt = getBuyableAmount(this.layer, this.id);
