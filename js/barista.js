@@ -27,17 +27,8 @@ addLayer("b", { // "b" for Baristas
         // --- STAR MILESTONE 1: AUTOMATED BARISTA HIRING ---
         // Automatically purchases Buyable 11 and Buyable 12 if affordable!
         if (hasMilestone('s', 1)) {
-            
-            // 🧑‍🍳 Auto-Buy Buyable 11
-            // 🌟 FIXED: Using layers[layer].buyables[id].canAfford() to check parameters natively
-            if (layers[this.layer].buyables[11].canAfford()) {
-                buyBuyable('b', 11);
-            }
-
-            // ☕ Auto-Buy Buyable 12
-            if (layers[this.layer].buyables[12].canAfford()) {
-                buyBuyable('b', 12);
-            }
+            if (canBuyBuyable('b', 11)) buyBuyable('b', 11);
+            if (canBuyBuyable('b', 12)) buyBuyable('b', 12);
         }
     },
     // This handles the display on the screen

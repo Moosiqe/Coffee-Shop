@@ -44,6 +44,9 @@ addLayer("p", {
             if (hasUpgrade('c', 34)) {customerGain = customerGain.times(upgradeEffect('c', 34))}
             if (hasUpgrade('p', 21)) {customerGain = customerGain.times(upgradeEffect('p', 21));}
 
+            // --- Head Quarters ---
+            //if (window.hqCustomerMult) customerGain = customerGain.times(window.hqCustomerMult);
+
             // --- THE VIP CONVERSION LOOP ---
             if (hasMilestone('p', 1)) {
                 let vipGain = player.p.customers.add(1).pow(0.09).div(5e7);
@@ -58,6 +61,7 @@ addLayer("p", {
                 if (buyableEffect('b', 13)) {
                     vipGain = vipGain.times(buyableEffect('b', 13));
                 }
+                //if (window.hqVipMult) vipGain = vipGain.times(window.hqVipMult);
                 
                 player.p.vipCustomers = player.p.vipCustomers.add(vipGain.times(diff));
             }
@@ -214,7 +218,7 @@ addLayer("p", {
             effect() {
                 // Formula: (Customers ^ 0.4) + 1
                 // When you have 10,000 customers, this will give a massive ~40x boost to Beans!
-                return player[this.layer].customers.add(1).pow(0.47);
+                return player[this.layer].customers.add(1).pow(0.44);
             },
             effectDisplay() { 
                 return format(upgradeEffect(this.layer, this.id)) + "x" 

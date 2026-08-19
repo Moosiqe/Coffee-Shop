@@ -26,7 +26,7 @@ addLayer("s", { // "s" for Stars
         if (currentStars.eq(0)) return new Decimal(5e49);
         if (currentStars.eq(1)) return new Decimal(2.5e120);
         if (currentStars.eq(2)) return new Decimal("5e999");
-        if (currentStars.eq(3)) return new Decimal(1e340);
+        if (currentStars.eq(3)) return new Decimal("5e2499");
         if (currentStars.eq(4)) return new Decimal(1e500);
 
         return new Decimal("1e1000"); 

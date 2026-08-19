@@ -14,7 +14,8 @@ addLayer("c", {
     baseResource: "Beans", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 1.375, // Prestige currency exponent
+    exponent: 0.375,
+
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         return mult
@@ -23,6 +24,7 @@ addLayer("c", {
         return new Decimal(1)
     },
     autoPrestige() {
+        if (player.h.activeChallenge !== null) return false; 
         if (hasMilestone('s', 1)) return true;
         return false;
     },
@@ -60,6 +62,8 @@ addLayer("c", {
             if (hasUpgrade('p', 23)) {
                 milkGain = milkGain.times(upgradeEffect('p', 23));
             }
+
+            //if (window.hqMilkMult) milkGain = milkGain.times(window.hqMilkMult);
             
             // 2. Add smoothly to the total milk balance
             player.c.milk = player.c.milk.add(milkGain.times(diff));
@@ -175,9 +179,25 @@ addLayer("c", {
             description: "Beans multiply Beans.",
             cost: new Decimal(6),
             effect() {
-                return player.points.add(1).pow(0.41)
+                // 1. Calculate your original, raw explosive formula
+                let baseEffect = player.points.add(1).pow(0.41);
+                
+                if (baseEffect.gt("1e450")) {
+                    let excess = baseEffect.div("1e350");
+                    // Take the excess multiplier and heavily dampen it using a 0.15 power filter
+                    baseEffect = new Decimal("1e350").times(excess.pow(0.15));
+                }
+                return baseEffect;
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { 
+                let rawEffect = player.points.add(1).pow(0.41);
+                
+                // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
+                if (rawEffect.gt("1e450")) {
+                    return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
+                }
+                return format(this.effect()) + "x"; 
+            },
             unlocked() { return hasUpgrade('c', 14) },
         },
         21: {

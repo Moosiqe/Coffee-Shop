@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Coffee Shop",
 	author: "Moosiqe",
 	pointsName: "Beans",
-	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js", "lab.js", "tempRight.js"],
+	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js", "lab.js", "headQuarters.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -27,7 +27,7 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.1</h3><br>
+	<h3>v0.1 | "Release Date"</h3><br>
 		- 3 Layers.<br>
 		- A lot of BEANS.`
 
@@ -103,6 +103,8 @@ function getPointGen() {
 		let starExponent = player.s.points.times(0.03).add(1);
 		gain = gain.pow(starExponent);
 	}
+	// --- Head Quarters ---
+	//if (window.hqBeanMult) gain = gain.times(window.hqBeanMult);
     
 	return gain
 }
