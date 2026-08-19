@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Coffee Shop",
 	author: "Moosiqe",
 	pointsName: "Beans",
-	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js", "lab.js", "headQuarters.js"],
+	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js", "lab.js"],
 
 	discordName: "",
 	discordLink: "",

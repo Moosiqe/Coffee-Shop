@@ -14,7 +14,7 @@ addLayer("c", {
     baseResource: "Beans", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.375,
+    exponent: 1.375,
 
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
@@ -24,7 +24,6 @@ addLayer("c", {
         return new Decimal(1)
     },
     autoPrestige() {
-        if (player.h.activeChallenge !== null) return false; 
         if (hasMilestone('s', 1)) return true;
         return false;
     },
