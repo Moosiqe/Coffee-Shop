@@ -183,11 +183,13 @@ addLayer("l", { // "l" for Espresso Lab
         51: {
             title: "Classic Macchiato",
             cost(x) { 
-                return new Decimal(1).times(new Decimal(1.25).pow(x)).floor();
+                return new Decimal(1).times(new Decimal(1.2).pow(x)).floor();
             },
             effect(x) {
                 let baseEffect = new Decimal(3).pow(x);
             if (hasUpgrade('c', 35)) baseEffect = baseEffect.times(upgradeEffect('c', 35));
+            if (hasUpgrade('c', 55)) baseEffect = baseEffect.times(upgradeEffect('c', 55));
+            if (hasUpgrade('p', 25)) baseEffect = baseEffect.times(upgradeEffect('p', 25));
             return baseEffect;
             },
             display() { 
@@ -195,7 +197,7 @@ addLayer("l", { // "l" for Espresso Lab
                 return "Target Ratio: 63.64% Beans / 36.36% Milk.\n\n" +
                        "Level: " + formatWhole(amt) + "\n" +
                        "Cost: " + formatWhole(this.cost()) + " Research Points\n\n" +
-                       "Current Boost: " + format(this.effect()) + "x to Bean production speed."
+                       "Currently: " + format(this.effect()) + "x Beans."
             },
             canAfford() {
                 // 🌟 EXPLICIT EXACT MATCH: Must have precisely 7 Beans and 4 Milk in the chamber!
@@ -212,11 +214,13 @@ addLayer("l", { // "l" for Espresso Lab
         52: {
             title: "Velvet Flat White",
             cost(x) { 
-                return new Decimal(3).times(new Decimal(1.25).pow(x)).floor();
+                return new Decimal(2).times(new Decimal(1.25).pow(x)).floor();
             },
             effect(x) {
                 let baseEffect = new Decimal(2.5).pow(x);
             if (hasUpgrade('c', 35)) baseEffect = baseEffect.times(upgradeEffect('c', 35));
+            if (hasUpgrade('c', 55)) baseEffect = baseEffect.times(upgradeEffect('c', 55));
+            if (hasUpgrade('p', 25)) baseEffect = baseEffect.times(upgradeEffect('p', 25));
             return baseEffect;
             },
             display() { 
@@ -224,7 +228,7 @@ addLayer("l", { // "l" for Espresso Lab
                 return "Target Ratio: 38.46% Beans / 61.54% Milk.\n\n" +
                        "Level: " + formatWhole(amt) + "\n" +
                        "Cost: " + formatWhole(this.cost()) + " Research Points\n\n" +
-                       "Current Boost: " + format(this.effect()) + "x to Customer arrival speed."
+                       "Currently: " + format(this.effect()) + "x Customers."
             },
             canAfford() {
                 // 🌟 EXPLICIT EXACT MATCH: Must have precisely 10 Beans and 16 Milk in the chamber!
@@ -241,11 +245,13 @@ addLayer("l", { // "l" for Espresso Lab
         53: {
             title: "Nitro Cold Brew",
             cost(x) { 
-                return new Decimal(4).times(new Decimal(1.25).pow(x)).floor();
+                return new Decimal(2).times(new Decimal(1.25).pow(x)).floor();
             },
             effect(x) {
-                let baseEffect = new Decimal(2.5).pow(x);
+                let baseEffect = new Decimal(4).pow(x);
             if (hasUpgrade('c', 35)) baseEffect = baseEffect.times(upgradeEffect('c', 35));
+            if (hasUpgrade('c', 55)) baseEffect = baseEffect.times(upgradeEffect('c', 55));
+            if (hasUpgrade('p', 25)) baseEffect = baseEffect.times(upgradeEffect('p', 25));
             return baseEffect;
             },
             display() { 
@@ -253,7 +259,7 @@ addLayer("l", { // "l" for Espresso Lab
                 return "Target Ratio: 13.04% Beans / 86.96% Milk.\n\n" +
                        "Level: " + formatWhole(amt) + "\n" +
                        "Cost: " + formatWhole(this.cost()) + " Research Points\n\n" +
-                       "Current Boost: " + format(this.effect()) + "x to Milk generation speed."
+                       "Currently: " + format(this.effect()) + "x Milk."
             },
             canAfford() {
                 // 🌟 EXPLICIT EXACT MATCH: Must have precisely 9 Beans and 60 Milk in the chamber!

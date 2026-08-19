@@ -69,11 +69,11 @@ addLayer("b", { // "b" for Baristas
             unlocked() { return hasMilestone('b', 0) },
         },
         2: {
-            requirementDescription: "11 Baristas",
+            requirementDescription: "16 Baristas",
             done() { 
-                return player.b.points.gte(11) // Checks current Baristas
+                return player.b.points.gte(16) // Checks current Baristas
             },
-            effectDescription: "Unlock ",
+            effectDescription: "Unlock the VIP Party? Buyable.",
             unlocked() {return hasMilestone('s', 1)},
         },
     },
@@ -81,7 +81,7 @@ addLayer("b", { // "b" for Baristas
     // --- BUYABLE THAT COSTS CUSTOMERS & BOOSTS BEANS ---
     buyables: {
         rows: 1, // REQUIRED: Tells the engine how many rows are in the buyable grid
-        cols: 2, // REQUIRED: Tells the engine how many columns are in the buyable grid
+        cols: 3, // REQUIRED: Tells the engine how many columns are in the buyable grid
         
         11: {
             title: "Barista Efficiency",
@@ -150,7 +150,35 @@ addLayer("b", { // "b" for Baristas
                 // Stays hidden until they cross the 1 Barista milestone
                 return hasMilestone('b', 1)
             }
-        }
+        },
+        13: {
+            title: "VIP Party?",
+            cost(x) { 
+                return new Decimal("1e65").times(new Decimal(15).pow(x));
+            },
+            display() { 
+                return "Senior Staff required for these people..\n\n" +
+                       "Level: " + formatWhole(player.b.buyables[this.id]) + "\n" +
+                       "Cost: " + format(this.cost()) + " Customers\n\n" +
+                       "Effect: Multiplies VIP Customers by " + format(buyableEffect(this.layer, this.id)) + "x"
+            },
+            effect(x) {
+                // Compounding Formula: Every level purchased grants a compounding 1.5x speed boost to VIP arrivals
+                return new Decimal(1.25).pow(x);
+            },
+            canAfford() { 
+                // Explicitly checks against your Barista prestige points wallet balance!
+                return player.p.customers.gte(this.cost()); 
+            },
+            buy() {
+                // 🌟 CROSS-LAYER SUBTRACTION: Deducts the amount straight from your customer pool!
+                player.p.customers = player.p.customers.sub(this.cost());
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1));
+            },
+            unlocked() { 
+                return hasMilestone('b', 2); // Revealed exclusively in the Star 2 Era!
+            }
+        },
     
 
     },

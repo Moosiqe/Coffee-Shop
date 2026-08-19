@@ -73,6 +73,7 @@ function getPointGen() {
 	if (hasUpgrade('c', 31)) gain = gain.times(upgradeEffect('c', 31))
 	if (hasUpgrade('c', 32)) gain = gain.times(upgradeEffect('c', 32))
 	if (hasUpgrade('c', 33)) gain = gain.times(upgradeEffect('c', 33))
+		
 	
 	// --- Popularity Upgrades & other ---
 	//if (player.p.unlocked) {
@@ -82,12 +83,15 @@ function getPointGen() {
     //}
 	if (hasUpgrade('p', 11)) gain = gain.times(upgradeEffect('p', 11))
 	if (hasUpgrade('p', 15)) {gain = gain.times(upgradeEffect('p', 15))}
+	if (hasUpgrade('p', 22)) {gain = gain.times(upgradeEffect('p', 22))}
+	if (hasUpgrade('p', 24)) {gain = gain.times(upgradeEffect('p', 24));}
 
 	// --- Barista Upgrades ---
 	if (hasMilestone('b', 0)) {gain = gain.times(buyableEffect('b', 11))}
 
 	// --- Milk Upgrades ---
 	if (hasUpgrade('c', 41)) {gain = gain.times(upgradeEffect('c', 41))}
+	if (hasUpgrade('c', 54)) {gain = gain.times(upgradeEffect('c', 54))}
 
 	// --- Lab Upgrades ---
 	if (buyableEffect('l', 51)) {

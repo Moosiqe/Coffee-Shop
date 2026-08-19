@@ -22,12 +22,20 @@ addLayer("c", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         return new Decimal(1)
     },
+    autoPrestige() {
+        if (hasMilestone('s', 1)) return true;
+        return false;
+    },
+    canReset() {
+        return player.points.gte(getNextAt("c"));
+    },
     resetsNothing() { 
         return hasMilestone('s', 0); 
     },
     canBuyMax() { 
         return hasMilestone('s', 0) || hasMilestone('p', 0); 
     },
+    
 
     update(diff) {
        if (player.c.milkTabUnlocked) {  
@@ -48,6 +56,10 @@ addLayer("c", {
                 milkGain = milkGain.times(upgradeEffect('p', 14));
             }
             if (buyableEffect('l', 53)) milkGain = milkGain.times(buyableEffect('l', 53));
+            if (hasUpgrade('c', 51)) milkGain = milkGain.times(upgradeEffect('c', 51));
+            if (hasUpgrade('p', 23)) {
+                milkGain = milkGain.times(upgradeEffect('p', 23));
+            }
             
             // 2. Add smoothly to the total milk balance
             player.c.milk = player.c.milk.add(milkGain.times(diff));
@@ -89,6 +101,8 @@ addLayer("c", {
                     if (hasUpgrade('c', 44)) milkGain = milkGain.times(upgradeEffect('c', 44))
                     if (hasUpgrade('p', 14)) milkGain = milkGain.times(upgradeEffect('p', 14))
                     if (buyableEffect('l', 53)) {milkGain = milkGain.times(buyableEffect('l', 53))}
+                    if (hasUpgrade('c', 51)) milkGain = milkGain.times(upgradeEffect('c', 51));
+                    if (hasUpgrade('p', 23)) milkGain = milkGain.times(upgradeEffect('p', 23));
                     return "(+" + format(milkGain) + "/sec)"
                 }],
                 
@@ -117,7 +131,7 @@ addLayer("c", {
         // 2. Otherwise, if it's a standard Row 1 reset (Popularity 'p' or Baristas 'b'), keep Milk safe!
         if (layers[resettingLayer].row > this.row) {
             player.c.points = new Decimal(0); 
-            player.c.upgrades = player.c.upgrades.filter(upg => String(upg).startsWith('4'));
+            player.c.upgrades = player.c.upgrades.filter(upg => String(upg).startsWith('4') || String(upg).startsWith('5'));
         }
     },
     
@@ -242,7 +256,7 @@ addLayer("c", {
         31: {
             title: "Caffeine Lab Synergy",
             description: "Total Research Points multiply Beans.",
-            cost: new Decimal(92), // Wrapped in quotes for absolute safety
+            cost: new Decimal(92),
             unlocked() { return hasMilestone('s', 1) }, // 🌟 Requires Star Milestone 1 (2 Stars)
             effect() { 
                  let totalRPCreated = getBuyableAmount('l', 11).add(getBuyableAmount('l', 12));
@@ -267,7 +281,7 @@ addLayer("c", {
             cost: new Decimal(105),
             unlocked() { return hasUpgrade('c', 32) },
             effect() {
-                return player.points.add(1).pow(0.05)
+                return player.points.add(1).pow(0.045)
             },
             effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
             
@@ -285,7 +299,7 @@ addLayer("c", {
         },
         35: {
             title: "The Grand Espresso",
-            description: "Every upgrade purchased x1.01 boost Espresso Lab Recipes.",
+            description: "Every upgrade purchased x1.12 boost Espresso Lab Recipes.",
             cost: new Decimal(200),
             unlocked() { return hasUpgrade('c', 34) }, // Star Milestone 1 (2 Stars)
             effect() {
@@ -293,9 +307,9 @@ addLayer("c", {
                                 (player.p.upgrades?.length || 0) + 
                                 (player.b.upgrades?.length || 0);
                 // Compounding math: 1.02 ^ Total Upgrades
-                return new Decimal(1.01).pow(totalUpgs);
+                return new Decimal(1.12).pow(totalUpgs);
             },
-            effectDisplay() { return "+" + format(this.effect().sub(1).times(100)) + "%" }
+            effectDisplay() { return format(this.effect()) + "x" }
         },
         // --- MILK UPGRADES ---
         41: {
@@ -387,6 +401,95 @@ addLayer("c", {
             currencyLayer: "c",
             currencyLocation() { return player.c },
             unlocked() { return hasUpgrade('c', 44) } // Chains cleanly after 44
+        },
+        51: {
+            title: "Condensed Milk Chemistry",
+            description: "Milk multiplied by Baristas.",
+            cost: new Decimal(1e49), 
+            unlocked() { 
+                // 🌟 GATED BY STAR 2: Only reveals itself when Star Milestone 1 is completed!
+                return hasMilestone('s', 1); 
+            },
+            effect() {
+                // Smooth square-root scaling multiplier so it scales beautifully without runaway spikes
+                return player.b.points.pow(1.75).add(1.25);
+            },
+            effectDisplay() { return format(this.effect()) + "x" },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasMilestone('s', 1) }
+        },
+        52: {
+            title: "Premium Marketing Blend",
+            description: "Milk boosts VIP Customers.",
+            cost: new Decimal("1e98"), 
+            
+            effect() {
+                // Re-calculates your current base milk gain to create a scaling multiplier
+                let baseMilkGen = player.points.add(1).pow(0.09);
+                // Logarithmic formula: log10(Base Milk + 1) * 1.5 + 1
+                return baseMilkGen.add(1).log10().times(0.5).add(1);
+            },
+            effectDisplay() { return format(this.effect()) + "x" },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasMilestone('p', 1) }
+        },
+        53: {
+            title: "Elites like Milk",
+            description: "Milk boosts VIP Customers again.",
+            cost: new Decimal("1e101"), 
+            
+            effect() {
+                // Re-calculates your current base milk gain to create a scaling multiplier
+                let baseMilkGen = player.points.add(1).pow(0.64);
+                return baseMilkGen.add(1).log10().times(0.55).add(1);
+            },
+            effectDisplay() { return format(this.effect()) + "x" },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasUpgrade('c', 52) }
+        },
+        54: {
+            title: "What makes Beans + Milk?",
+            description: "Milk multiplies Beans.",
+            cost: new Decimal("3.8e138"),
+            effect() {
+                return player[this.layer].milk.add(1.25).pow(0.055);
+            },
+            effectDisplay() { 
+                return format(upgradeEffect(this.layer, this.id)) + "x" 
+            },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasUpgrade('c', 53) } // Or whatever your trigger upgrade ID is!
+        },
+        55: {
+            title: "The Grand Macchiato",
+            description: "Milk floods the Espresso Lab Recipes.",
+            cost: new Decimal("1e185"), 
+            unlocked() { 
+                return hasUpgrade('c', 54); // Reveals itself once you buy the preceding milk upgrade
+            },
+            effect() {
+                let milkExponentSteps = player.c.milk.add(1).log10();
+                return new Decimal(1.055).pow(milkExponentSteps);
+            },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            effectDisplay() { 
+                return format(this.effect()) + "x" 
+            }
         },
     },
     

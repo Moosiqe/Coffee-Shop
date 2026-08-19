@@ -42,12 +42,22 @@ addLayer("p", {
             if (hasUpgrade('c', 45)) {customerGain = customerGain.times(upgradeEffect('c', 45))}
             if (buyableEffect('l', 52)) customerGain = customerGain.times(buyableEffect('l', 52))
             if (hasUpgrade('c', 34)) {customerGain = customerGain.times(upgradeEffect('c', 34))}
+            if (hasUpgrade('p', 21)) {customerGain = customerGain.times(upgradeEffect('p', 21));}
 
-            if (hasMilestone('s', 1)) {
-                // Rule: VIP accumulation speed scales based on your current standard customer population!
-                // Formula: (Standard Customers ^ 0.25) / 100 per second. 
-                // This creates a smooth, balanced curve that naturally handles late-game inflation.
-                let vipGain = player.p.customers.add(1).pow(0.1).div(1e6);
+            // --- THE VIP CONVERSION LOOP ---
+            if (hasMilestone('p', 1)) {
+                let vipGain = player.p.customers.add(1).pow(0.09).div(5e7);
+                
+                // 🌟 FIXED: Multiplies the active vipGain variable BEFORE adding it to your wallet!
+                if (hasUpgrade('c', 52)) {
+                    vipGain = vipGain.times(upgradeEffect('c', 52));
+                }
+                if (hasUpgrade('c', 53)) {
+                    vipGain = vipGain.times(upgradeEffect('c', 53));
+                }
+                if (buyableEffect('b', 13)) {
+                    vipGain = vipGain.times(buyableEffect('b', 13));
+                }
                 
                 player.p.vipCustomers = player.p.vipCustomers.add(vipGain.times(diff));
             }
@@ -76,12 +86,28 @@ addLayer("p", {
             if (hasUpgrade('c', 45)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 45))
             if (buyableEffect('l', 52)) {gainPerSecond = gainPerSecond.times(buyableEffect('l', 52))}
             if (hasUpgrade('c', 34)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 34));
+            if (hasUpgrade('p', 21)) {gainPerSecond = gainPerSecond.times(upgradeEffect('p', 21));
+        }
             return "(+" + format(gainPerSecond) + "/sec)"
         }],
+         // --- VIP Customer Display Ticker ---
         ["display-text", function() {
+            // 🌟 FIXED: Gated by Star Milestone 1 (2 Stars) since the popularity milestone is deleted!
             if (!hasMilestone('p', 1)) return ""; 
             
-            let currentVipGain = player.p.customers.add(1).pow(0.1).div(1e6);
+            let currentVipGain = player.p.customers.add(1).pow(0.09).div(5e7);
+            
+            // 🌟 FIXED: Multiplies the correct variable BEFORE hitting the return statement!
+            if (hasUpgrade('c', 52)) {
+                currentVipGain = currentVipGain.times(upgradeEffect('c', 52));
+            }
+            if (hasUpgrade('c', 53)) {
+                currentVipGain = currentVipGain.times(upgradeEffect('c', 53));
+            }
+             if (buyableEffect('b', 13)) {
+                currentVipGain = currentVipGain.times(buyableEffect('b', 13));
+            }
+            
             return "You have <h3 style='color: #F39C12; display: inline;'>" + format(player.p.vipCustomers) + "</h3> VIP Customers (+" + format(currentVipGain) + "/sec)"
         }],
         "milestones",
@@ -103,7 +129,7 @@ addLayer("p", {
                 return player.p.customers.gte(1e50) // Checks your 'p' layer customers!
             },
             effectDescription: "Unlock VIP Customers.",
-            unlocked() {return hasMilestone('p', 1)},
+            unlocked() {return hasMilestone('s', 1)},
         },
     },
 
@@ -197,7 +223,113 @@ addLayer("p", {
             currencyInternalName: "customers",      
             currencyLayer: "p",                     
             currencyLocation() { return player.p }, 
-            unlocked() { return hasUpgrade('p', 14) }, // Chains perfectly after 14
+            unlocked() { return hasUpgrade('p', 14) },
+        },
+        21: {
+            title: "Elite Word-of-Mouth",
+            description: "VIP's multiply Customers",
+            cost: new Decimal(1e60),
+            effect() {
+                return player.p.vipCustomers.add(1).log10().times(2).add(1);
+            },
+            effectDisplay() { 
+                return format(this.effect()) + "x" 
+            },
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                     
+            currencyLocation() { return player.p }, 
+            unlocked() { return hasMilestone('p', 1) },
+        },
+        22: {
+            title: "Premium VIP Endorsement",
+            description: "VIP's have discovered BEANZ.",
+            cost: new Decimal("1e65"),
+            
+            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                     
+            currencyLocation() { return player.p }, 
+
+            unlocked() { 
+                return hasUpgrade('p', 21)
+            },
+            effect() {
+                return player.p.vipCustomers.add(1).pow(0.7);
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        23: {
+            title: "VIP Supply Logistics",
+            description: "VIP's are doing the work for Milk.",
+            cost: new Decimal("1e74"), 
+            
+            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                     
+            currencyLocation() { return player.p }, 
+
+            unlocked() { 
+                return hasUpgrade('p', 22)
+            },
+            effect() {
+                return player.p.vipCustomers.add(1.22).pow(0.75);
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        24: {
+            title: "Franchise Royalty Dividends",
+            description: "Multiply Beans based on first two Barista buyables.",
+            cost: new Decimal("1e83"), // Premium late-game customer vault size cost!
+            
+            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                     
+            currencyLocation() { return player.p }, 
+
+            unlocked() { 
+                return hasUpgrade('p', 23)
+            },
+            effect() {
+                // Grabs the live levels of your automated Barista training slots
+                let level11 = getBuyableAmount('b', 11);
+                let level12 = getBuyableAmount('b', 12);
+                let combinedStaffLevels = level11.add(level12);
+                
+                // Formula: Every combined training level grants an additional +5% global Bean velocity!
+                return new Decimal(1.01).pow(combinedStaffLevels);
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        25: {
+            title: "The Grand Franchise",
+            description: "A VIP Customer bought the Espresso Lab Recipes.",
+            cost: new Decimal("1.6e160"), // Ultra late-game customer cost barrier!
+            
+            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                     
+            currencyLocation() { return player.p }, 
+
+            unlocked() { 
+                // Dynamically reveals itself once you buy the preceding customer upgrade
+                return hasUpgrade('p', 24); 
+            },
+            effect() {
+                // 🛡️ THE LOG SHIELD RESTORED: Completely dampens late-game inflation!
+                // 10 VIPs = 1 step | 100 VIPs = 2 steps | 1,000 VIPs = 3 steps | 10,000 VIPs = 4 steps
+                let vipLogSteps = player.p.vipCustomers.add(1).log10();
+                
+                // Compounding Formula: 1.05 ^ log10(VIPs)
+                return new Decimal(1.4).pow(vipLogSteps);
+            },
+            effectDisplay() { 
+                return format(this.effect()) + "x" 
+            }
         },
     }
     
