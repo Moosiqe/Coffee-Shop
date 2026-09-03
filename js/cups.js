@@ -14,8 +14,13 @@ addLayer("c", {
     baseResource: "Beans", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 1.375,
-
+    exponent() {
+        let baseExp = new Decimal(1.375);
+        if (hasUpgrade('w', 12)) {
+            baseExp = baseExp.div(upgradeEffect('w', 12));
+        }
+        return baseExp;
+    },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         return mult
@@ -61,12 +66,15 @@ addLayer("c", {
             if (hasUpgrade('p', 23)) {
                 milkGain = milkGain.times(upgradeEffect('p', 23));
             }
-
-            //if (window.hqMilkMult) milkGain = milkGain.times(window.hqMilkMult);
+            if (hasUpgrade('w', 13)) {
+                milkGain = milkGain.times(upgradeEffect('w', 13));
+            }
+            
             
             // 2. Add smoothly to the total milk balance
             player.c.milk = player.c.milk.add(milkGain.times(diff));
         }
+        
     },
 
     tabFormat: {
@@ -75,6 +83,10 @@ addLayer("c", {
             content: [
                 "main-display",
                 "prestige-button",
+                "blank",
+                "hr",
+                "blank",
+                ["display-text", "<h3>Coffee Cups Upgrades</h3>"],
                 "blank",
                 ["upgrades", [1, 2, 3]] // upgrades 1-3 will render on main tab
             ]
@@ -106,9 +118,13 @@ addLayer("c", {
                     if (buyableEffect('l', 53)) {milkGain = milkGain.times(buyableEffect('l', 53))}
                     if (hasUpgrade('c', 51)) milkGain = milkGain.times(upgradeEffect('c', 51));
                     if (hasUpgrade('p', 23)) milkGain = milkGain.times(upgradeEffect('p', 23));
+                    if (hasUpgrade('w', 13)) milkGain = milkGain.times(upgradeEffect('w', 13));
                     return "(+" + format(milkGain) + "/sec)"
                 }],
-                
+                "blank",
+                "hr",
+                "blank",
+                ["display-text", "<h3>Milk Upgrades</h3>"],
                 "blank",
                 ["upgrades", [4, 5]]  // Any upgrades placed in the 40+ grid will render on this sub-tab!
             ]
@@ -122,16 +138,17 @@ addLayer("c", {
     layerShown(){return true},
 
     doReset(resettingLayer) {
-        // 1. CRITICAL EXCEPTION: If the reset is coming from Stars ('s'), wipe EVERYTHING!
-        if (resettingLayer == "s") {
+        // 🧼 CORE RESET SHIELD: If reset by a Row 2 node (Stars or Warehouse), 
+        // flatten EVERYTHING inside the Coffee layer down to a true zero!
+        if (resettingLayer == "s" || resettingLayer == "w") {
             player.c.points = new Decimal(0);         // Wipe Coffee Cups
-            player.c.milk = new Decimal(0);           // Reset Milk back to 0!
-            player.c.milkTabUnlocked = false;         // Lock the Milk Station tab button back up!
-            player.c.upgrades = [];                   // Wipe ALL upgrades (including Row 4 milk ones!)
-            return;                                   // Stop running the function here so it cleans house.
+            player.c.milk = new Decimal(0);           // Clear Milk back to 0!
+            player.c.milkTabUnlocked = false;         // Lock the Milk Station tab up!
+            player.c.upgrades = [];                   // Wipe ALL purchased upgrades array entries
+            return;                                   
         }
 
-        // 2. Otherwise, if it's a standard Row 1 reset (Popularity 'p' or Baristas 'b'), keep Milk safe!
+        // Otherwise, if it's an early-game Row 1 check (Popularity or Baristas), use your default rule:
         if (layers[resettingLayer].row > this.row) {
             player.c.points = new Decimal(0); 
             player.c.upgrades = player.c.upgrades.filter(upg => String(upg).startsWith('4') || String(upg).startsWith('5'));
@@ -181,10 +198,10 @@ addLayer("c", {
                 // 1. Calculate your original, raw explosive formula
                 let baseEffect = player.points.add(1).pow(0.41);
                 
-                if (baseEffect.gt("1e450")) {
-                    let excess = baseEffect.div("1e350");
+                if (baseEffect.gt("1e400")) {
+                    let excess = baseEffect.div("1e400");
                     // Take the excess multiplier and heavily dampen it using a 0.15 power filter
-                    baseEffect = new Decimal("1e350").times(excess.pow(0.15));
+                    baseEffect = new Decimal("1e400").times(excess.pow(0.1));
                 }
                 return baseEffect;
             },
@@ -192,7 +209,7 @@ addLayer("c", {
                 let rawEffect = player.points.add(1).pow(0.41);
                 
                 // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
-                if (rawEffect.gt("1e450")) {
+                if (rawEffect.gt("1e400")) {
                     return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
                 }
                 return format(this.effect()) + "x"; 

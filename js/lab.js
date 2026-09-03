@@ -2,7 +2,7 @@ addLayer("l", { // "l" for Espresso Lab
     name: "Espresso Lab",
     symbol: "L",
     row: 2, // Sits on Row 2 directly next to Restaurant Stars!
-    position: 1.5, // Position 1 moves it to the right side of Stars (Position 0)
+    position: -1, // Position 1 moves it to the right side of Stars (Position 0)
     
     // --- INITIALIZE ALL STORAGE WALLETS ---
     startData() { return {
@@ -68,6 +68,7 @@ addLayer("l", { // "l" for Espresso Lab
             ["buyable", 23], ["buyable", 24]
         ]],
         "blank",
+        
         ["row", [["buyable", 51], ["buyable", 52], ["buyable", 53]]],
         "blank",
         "hr",
@@ -105,7 +106,7 @@ addLayer("l", { // "l" for Espresso Lab
                 return new Decimal(1e3).times(new Decimal(1e2).pow(x)) 
             },
             display() { 
-                return "Analyze your dairy station supply curves for new variables.\n\n" +
+                return "Analyze your milk station supply curves for new variables.\n\n" +
                        "Research Points Minted: " + formatWhole(getBuyableAmount(this.layer, this.id)) + "\n" +
                        "Cost: " + format(this.cost()) + " Milk\n\n" +
                        "Adds +1 Research Point to your lab vault."
@@ -182,8 +183,14 @@ addLayer("l", { // "l" for Espresso Lab
         // ==========================================
         51: {
             title: "Classic Macchiato",
-            cost(x) { 
-                return new Decimal(1).times(new Decimal(1.2).pow(x)).floor();
+           cost(x) { 
+                let baseCost = new Decimal(1).times(new Decimal(1.2).pow(x)); 
+                
+                // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
+                if (hasUpgrade('w', 14)) {
+                    baseCost = baseCost.div(upgradeEffect('w', 14));
+                }
+                return baseCost.floor();
             },
             effect(x) {
                 let baseEffect = new Decimal(3).pow(x);
@@ -213,9 +220,15 @@ addLayer("l", { // "l" for Espresso Lab
 
         52: {
             title: "Velvet Flat White",
-            cost(x) { 
-                return new Decimal(2).times(new Decimal(1.25).pow(x)).floor();
-            },
+                cost(x) { 
+                    let baseCost = new Decimal(2).times(new Decimal(1.25).pow(x)); 
+                    
+                    // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
+                    if (hasUpgrade('w', 14)) {
+                        baseCost = baseCost.div(upgradeEffect('w', 14));
+                    }
+                    return baseCost.floor();
+                },
             effect(x) {
                 let baseEffect = new Decimal(2.5).pow(x);
             if (hasUpgrade('c', 35)) baseEffect = baseEffect.times(upgradeEffect('c', 35));
@@ -245,7 +258,13 @@ addLayer("l", { // "l" for Espresso Lab
         53: {
             title: "Nitro Cold Brew",
             cost(x) { 
-                return new Decimal(2).times(new Decimal(1.25).pow(x)).floor();
+                let baseCost = new Decimal(2).times(new Decimal(1.25).pow(x)); 
+                
+                // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
+                if (hasUpgrade('w', 14)) {
+                    baseCost = baseCost.div(upgradeEffect('w', 14));
+                }
+                return baseCost.floor();
             },
             effect(x) {
                 let baseEffect = new Decimal(4).pow(x);

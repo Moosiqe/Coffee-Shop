@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Coffee Shop",
 	author: "Moosiqe",
 	pointsName: "Beans",
-	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js", "lab.js"],
+	modFiles: ["cups.js", "tree.js", "popularity.js", "barista.js", "stars.js", "lab.js", "warehouse.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -103,8 +103,8 @@ function getPointGen() {
 		let starExponent = player.s.points.times(0.03).add(1);
 		gain = gain.pow(starExponent);
 	}
-	// --- Head Quarters ---
-	//if (window.hqBeanMult) gain = gain.times(window.hqBeanMult);
+	// --- Warehouse Upgrades ---
+	if (hasUpgrade('w', 11)) {gain = gain.times(upgradeEffect('w', 11))}
     
 	return gain
 }

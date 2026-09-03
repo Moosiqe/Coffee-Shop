@@ -30,6 +30,9 @@ addLayer("b", { // "b" for Baristas
             if (canBuyBuyable('b', 11)) buyBuyable('b', 11);
             if (canBuyBuyable('b', 12)) buyBuyable('b', 12);
         }
+        if (hasMilestone('s', 1)) {
+            if (canBuyBuyable('b', 13)) buyBuyable('b', 13);
+        }
     },
     // This handles the display on the screen
     tabFormat: [
@@ -37,6 +40,10 @@ addLayer("b", { // "b" for Baristas
         "prestige-button",
         "blank",
         "milestones", // Draws your native milestone panel
+        "blank",
+        "hr",
+        "blank",
+        ["display-text", "<h3>Barista Upgrades</h3>"],
         "blank",
         "buyables",
         "blank"    // Draws your buyables grid

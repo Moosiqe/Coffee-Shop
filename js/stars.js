@@ -26,10 +26,10 @@ addLayer("s", { // "s" for Stars
         if (currentStars.eq(0)) return new Decimal(5e49);
         if (currentStars.eq(1)) return new Decimal(2.5e120);
         if (currentStars.eq(2)) return new Decimal("5e999");
-        if (currentStars.eq(3)) return new Decimal("5e2499");
-        if (currentStars.eq(4)) return new Decimal(1e500);
+        if (currentStars.eq(3)) return new Decimal("5e1159");
+        if (currentStars.eq(4)) return new Decimal("1e5000");
 
-        return new Decimal("1e1000"); 
+        return new Decimal("1e10000"); 
     },
 
     update(diff) {
@@ -51,6 +51,48 @@ addLayer("s", { // "s" for Stars
             }
             
         }
+        if (hasMilestone('s', 2)) {
+            for (let h= 31; h <= 35; h++) {
+                if (canAffordUpgrade('c', h) && !hasUpgrade('c', h)) {
+                    buyUpgrade('c', h);
+                }
+            }
+            for (let i = 41; i <= 45; i++) {
+                if (canAffordUpgrade('c', i) && !hasUpgrade('c', i)) {
+                    buyUpgrade('c', i);
+                }
+            }
+            for (let j = 51; j <= 55; j++) {
+                if (canAffordUpgrade('c', j) && !hasUpgrade('c', j)) {
+                    buyUpgrade('c', j);
+                }
+            }
+            for (let k = 11; k <= 15; k++) {
+                if (canAffordUpgrade('p', k) && !hasUpgrade('p', k)) {
+                    buyUpgrade('p', k);
+                }
+            }
+            for (let l = 21; l <= 25; l++) {
+                if (canAffordUpgrade('p', l) && !hasUpgrade('p', l)) {
+                    buyUpgrade('p', l);
+                }
+            }
+            let levelsToAdd = new Decimal(50).times(diff);
+
+            // Tier 11: Espresso Baristas (Checks and adds independently)
+            if (canBuyBuyable('b', 11)) {
+                let currentAmt11 = getBuyableAmount('b', 11);
+                setBuyableAmount('b', 11, currentAmt11.add(levelsToAdd));
+            }
+
+            // Tier 12: Latte Baristas (Checks and adds independently)
+            if (canBuyBuyable('b', 12)) {
+                let currentAmt12 = getBuyableAmount('b', 12);
+                setBuyableAmount('b', 12, currentAmt12.add(levelsToAdd));
+            }
+            
+        }
+        
     },
     unlocked() {
         return player.points.gte(1e50) || player.s.points.gte(1);
@@ -97,19 +139,19 @@ addLayer("s", { // "s" for Stars
         2: {
             requirementDescription: "⭐⭐⭐ 3 Coffee Shop Stars",
             done() { return player.s.points.gte(3) },
-            effectDescription: "- Unlock The Head Quarters <br> ",
+            effectDescription: "- Unlock Warehouse <br> - A lot more Automation",
             unlocked() {return hasMilestone('s', 1)},
         },
         3: {
             requirementDescription: "⭐⭐⭐⭐ 4 Coffee Shop Stars",
             done() { return player.s.points.gte(4) },
-            effectDescription: "Unlock something cool (Idea Slot 4).",
+            effectDescription: "- Unlock the Ultimate Upgrades on almost every layer <br> - Auto-Collect Popularity and Baristas <br> - Auto-Buy Bean and Milk Units" ,
             unlocked() {return hasMilestone('s', 2)},
         },
         4: {
             requirementDescription: "⭐⭐⭐⭐⭐ 5 Coffee Shop Stars",
             done() { return player.s.points.gte(5) },
-            effectDescription: "The Ultimate Café. You have mastered the coffee universe!",
+            effectDescription: "- Unlock the next layer of the game.",
             unlocked() {return hasMilestone('s', 3)},
         }
     },

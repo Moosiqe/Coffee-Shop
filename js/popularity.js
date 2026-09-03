@@ -44,8 +44,6 @@ addLayer("p", {
             if (hasUpgrade('c', 34)) {customerGain = customerGain.times(upgradeEffect('c', 34))}
             if (hasUpgrade('p', 21)) {customerGain = customerGain.times(upgradeEffect('p', 21));}
 
-            // --- Head Quarters ---
-            //if (window.hqCustomerMult) customerGain = customerGain.times(window.hqCustomerMult);
 
             // --- THE VIP CONVERSION LOOP ---
             if (hasMilestone('p', 1)) {
@@ -115,6 +113,9 @@ addLayer("p", {
             return "You have <h3 style='color: #F39C12; display: inline;'>" + format(player.p.vipCustomers) + "</h3> VIP Customers (+" + format(currentVipGain) + "/sec)"
         }],
         "milestones",
+        "hr",
+        "blank",
+        ["display-text", "<h3>Customer Upgrades</h3>"],
         "blank",
         "upgrades"
     ],
