@@ -49,6 +49,8 @@ addLayer("p", {
             if (buyableEffect('l', 52)) customerGain = customerGain.times(buyableEffect('l', 52))
             if (hasUpgrade('c', 34)) {customerGain = customerGain.times(upgradeEffect('c', 34))}
             if (hasUpgrade('p', 21)) {customerGain = customerGain.times(upgradeEffect('p', 21));}
+            if (hasUpgrade('p', 32)) {customerGain = customerGain.times(upgradeEffect('p', 32));}
+            if (hasUpgrade('w', 24)) {customerGain = customerGain.times(upgradeEffect('w', 24));}
 
 
             // --- THE VIP CONVERSION LOOP ---
@@ -65,8 +67,12 @@ addLayer("p", {
                 if (buyableEffect('b', 13)) {
                     vipGain = vipGain.times(buyableEffect('b', 13));
                 }
-                //if (window.hqVipMult) vipGain = vipGain.times(window.hqVipMult);
-                
+                if (hasUpgrade('w', 21)) {
+                    vipGain = vipGain.times(upgradeEffect('w', 21));
+                }
+                if (hasUpgrade('c', 71)) {
+                    vipGain = vipGain.times(upgradeEffect('c', 71));
+                }
                 player.p.vipCustomers = player.p.vipCustomers.add(vipGain.times(diff));
             }
 
@@ -95,6 +101,7 @@ addLayer("p", {
             if (buyableEffect('l', 52)) {gainPerSecond = gainPerSecond.times(buyableEffect('l', 52))}
             if (hasUpgrade('c', 34)) gainPerSecond = gainPerSecond.times(upgradeEffect('c', 34));
             if (hasUpgrade('p', 21)) {gainPerSecond = gainPerSecond.times(upgradeEffect('p', 21));
+            if (hasUpgrade('p', 32)) {gainPerSecond = gainPerSecond.times(upgradeEffect('p', 32));}
         }
             return "(+" + format(gainPerSecond) + "/sec)"
         }],
@@ -114,6 +121,12 @@ addLayer("p", {
             }
              if (buyableEffect('b', 13)) {
                 currentVipGain = currentVipGain.times(buyableEffect('b', 13));
+            }
+            if (hasUpgrade('w', 21)) {
+                currentVipGain = currentVipGain.times(upgradeEffect('w', 21));
+            }
+            if (hasUpgrade('c', 71)) {
+                currentVipGain = currentVipGain.times(upgradeEffect('w', 21));
             }
             
             return "You have <h3 style='color: #F39C12; display: inline;'>" + format(player.p.vipCustomers) + "</h3> VIP Customers (+" + format(currentVipGain) + "/sec)"
@@ -155,6 +168,8 @@ addLayer("p", {
     ],
     
     upgrades: {
+        rows: 3,
+        cols: 5,
         11: {
             title: "Loyal Lads",
             description: "Customers multiply Beans.",
@@ -170,7 +185,7 @@ addLayer("p", {
                     
                     // Extracts the excess value and applies a crushing ^0.10 power dampener,
                     // allowing it to scale smoothly into the endgame without leaking calculation arrays!
-                    baseEffect = new Decimal("1e100").times(excess.pow(0.1));
+                    baseEffect = new Decimal("1e100").times(excess.pow(0.25));
                 }
                 return baseEffect;
             },
@@ -248,12 +263,12 @@ addLayer("p", {
                 
                 // 🌟 THE DIMINISHING POWER SHIELD 🌟
                 // If the calculation attempts to spike past 1e250, drop the dampening filter!
-                if (baseEffect.gt("1e100")) {
-                    let excess = baseEffect.div("1e100");
+                if (baseEffect.gt("1e150")) {
+                    let excess = baseEffect.div("1e150");
                     
                     // Extracts the excess value and applies a crushing ^0.10 power dampener,
                     // allowing it to scale smoothly into the endgame without leaking calculation arrays!
-                    baseEffect = new Decimal("1e100").times(excess.pow(0.1));
+                    baseEffect = new Decimal("1e150").times(excess.pow(0.35));
                 }
                 return baseEffect;
             },
@@ -261,7 +276,7 @@ addLayer("p", {
                 let rawEffect = player[this.layer].customers.add(1).pow(0.44);
                 
                 // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
-                if (rawEffect.gt("1e100")) {
+                if (rawEffect.gt("1e150")) {
                     return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
                 }
                 return format(this.effect()) + "x"; 
@@ -310,7 +325,7 @@ addLayer("p", {
         23: {
             title: "VIP Supply Logistics",
             description: "VIP's are doing the work for Milk.",
-            cost: new Decimal("1e74"), 
+            cost: new Decimal("1e75"), 
             
             // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
             currencyDisplayName: "Customers",       
@@ -327,7 +342,7 @@ addLayer("p", {
             effectDisplay() { return format(this.effect()) + "x" }
         },
         24: {
-            title: "Franchise Royalty Dividends",
+            title: "Franchise Royalty",
             description: "Multiply Beans based on first two Barista buyables.",
             cost: new Decimal("1e83"), // Premium late-game customer vault size cost!
             
@@ -354,7 +369,7 @@ addLayer("p", {
         25: {
             title: "The Grand Franchise",
             description: "A VIP Customer bought the Espresso Lab Recipes.",
-            cost: new Decimal("1.6e160"), // Ultra late-game customer cost barrier!
+            cost: new Decimal("1.6e153"), // Ultra late-game customer cost barrier!
             
             // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
             currencyDisplayName: "Customers",       
@@ -366,17 +381,95 @@ addLayer("p", {
                 // Dynamically reveals itself once you buy the preceding customer upgrade
                 return hasUpgrade('p', 24); 
             },
-            effect() {
-                // 🛡️ THE LOG SHIELD RESTORED: Completely dampens late-game inflation!
-                // 10 VIPs = 1 step | 100 VIPs = 2 steps | 1,000 VIPs = 3 steps | 10,000 VIPs = 4 steps
+           effect() {
                 let vipLogSteps = player.p.vipCustomers.add(1).log10();
+                let baseEffect = new Decimal(1.4).pow(vipLogSteps);
                 
-                // Compounding Formula: 1.05 ^ log10(VIPs)
-                return new Decimal(1.4).pow(vipLogSteps);
+                if (hasUpgrade('p', 34)) {
+                    baseEffect = baseEffect.times(upgradeEffect('p', 34));
+                }
+                return baseEffect;
             },
             effectDisplay() { 
                 return format(this.effect()) + "x" 
             }
+        },
+        31: {
+            title: "Logistical Infusion",
+            description: "Milk gets boosted by Permits.",
+            cost: new Decimal("1e249"),
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p", 
+            unlocked() { return hasMilestone('s', 3) }, // Revealed natively when you hit 4 Stars!
+            effect() {
+                let permits = player.w.points || new Decimal(0);
+                return new Decimal(2.50).pow(permits);
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
+        },
+        32: {
+            title: "Mass Market",
+            description: "Beans Multiply Customers, crazy right?",
+            cost: new Decimal("1e270"), 
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p", 
+            unlocked() { return hasUpgrade('p', 31) }, 
+            effect() {
+                let beans = player.points || new Decimal(0);
+                let rawLog = beans.add(1).log10();
+                
+                return new Decimal(1).add(rawLog.times(0.75));
+            },
+            effectDisplay() { return format(this.effect()) + "x" },
+        },
+        33: {
+            title: "High-Traffic Dairy Flow",
+            description: "Very basic stuff, Customer x Milk.",
+            cost: new Decimal("1e290"),
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p", 
+            unlocked() { return hasUpgrade('p', 32) }, 
+            effect() {
+                let customers = player.p.customers || new Decimal(0);
+                let customerLog = customers.add(1).log10();
+                return new Decimal(1.15).pow(customerLog);
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
+        },
+        34: {
+            title: "Viral Lab Marketing",
+            description: "Improve upgrade 25.",
+            cost: new Decimal("1e380"),
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",
+            unlocked() { return hasUpgrade('p', 33) },
+            effect() {
+                let customers = player.p.customers || new Decimal(0);
+                let customerLog = customers.add(1).log10();
+                
+                return new Decimal(1.09).pow(customerLog.div(1.5));
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
+        },
+        35: {
+            title: "ULTRA DIVIDER",
+            description: "Divide Lab Upgrade costs once again...",
+            cost: new Decimal("1e1300"), 
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",
+            unlocked() { return hasUpgrade('p', 34) },
+            effect() {
+                let customers = player.p.customers;
+                let customerLog10 = customers.add(1).log10().log10();
+
+                return new Decimal(10).pow(customerLog10);
+            },
+            effectDisplay() { return "/" + format(this.effect(), 2) },
         },
     }
     

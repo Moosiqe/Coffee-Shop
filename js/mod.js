@@ -7,7 +7,7 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (1), // Used for hard resets and new players
-	offlineLimit: 0,  // In hours
+	offlineLimit: 1,  // In hours
 }
 
 
@@ -15,11 +15,11 @@ let modInfo = {
 // Set your version in num and name
 let VERSION = {
 	num: "0.1",
-	name: "Literally nothing",
+	name: "Release",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.1 | "Release Date"</h3><br>
+	<h3>v0.1 | "September 15th 2026"</h3><br>
 		- 3 Layers.<br>
 		- A lot of BEANS.`
 
@@ -65,6 +65,7 @@ function getPointGen() {
 	if (hasUpgrade('c', 31)) gain = gain.times(upgradeEffect('c', 31))
 	if (hasUpgrade('c', 32)) gain = gain.times(upgradeEffect('c', 32))
 	if (hasUpgrade('c', 33)) gain = gain.times(upgradeEffect('c', 33))
+	if (hasUpgrade('c', 64)) gain = gain.times(upgradeEffect('c', 64))
 		
 	
 	// --- Popularity Upgrades & other ---

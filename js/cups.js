@@ -40,11 +40,20 @@ addLayer("c", {
     // Automatically runs smoothly every single game frame tick!
     passiveGeneration() {
          if (hasMilestone('s', 2)) {
-            let basePassive = new Decimal(1);
+            let basePassive = new Decimal(15);
             
             // 🌌 WAREHOUSE OVERCLOCK: If you buy Upgrade 12, ADD the scaling factor cleanly!
             if (hasUpgrade('w', 12)) {
                 basePassive = basePassive.add(upgradeEffect('w', 12));
+            }
+            if (hasUpgrade('c', 61)) {
+                basePassive = basePassive.add(upgradeEffect('c', 61));
+            }
+            if (hasUpgrade('w', 22)) {
+                basePassive = basePassive.times(upgradeEffect('w', 22));
+            }
+            if (hasUpgrade('c', 63)) {
+                basePassive = basePassive.times(upgradeEffect('c', 63));
             }
             return basePassive;
         }
@@ -89,6 +98,11 @@ addLayer("c", {
             if (hasUpgrade('w', 13)) {
                 milkGain = milkGain.times(upgradeEffect('w', 13));
             }
+            if (hasUpgrade('p', 31)) {
+                milkGain = milkGain.times(upgradeEffect('p', 31));
+            }
+            if (hasUpgrade('p', 33)) milkGain = milkGain.times(upgradeEffect('p', 33));
+            if (hasUpgrade('c', 73)) milkGain = milkGain.times(upgradeEffect('c', 73));
             
             
             // 2. Add smoothly to the total milk balance
@@ -103,15 +117,15 @@ addLayer("c", {
             content: [
                 "main-display",
                 function() {
-                    if (hasMilestone('s', 2)) return ""; // Hides it entirely!
-                    return "prestige-button"; // Draws it normally in the early game.
+                    if (hasMilestone('s', 2)) return ""; 
+                    return "prestige-button";
                 },
                 "blank",
                 "hr",
                 "blank",
                 ["display-text", "<h3>Coffee Cups Upgrades</h3>"],
                 "blank",
-                ["upgrades", [1, 2, 3]] // upgrades 1-3 will render on main tab
+                ["upgrades", [1, 2, 3, 6]] 
             ]
         },
         // Tab 2: The Milk Tab
@@ -142,6 +156,10 @@ addLayer("c", {
                     if (hasUpgrade('c', 51)) milkGain = milkGain.times(upgradeEffect('c', 51));
                     if (hasUpgrade('p', 23)) milkGain = milkGain.times(upgradeEffect('p', 23));
                     if (hasUpgrade('w', 13)) milkGain = milkGain.times(upgradeEffect('w', 13));
+                    if (hasUpgrade('p', 31)) milkGain = milkGain.times(upgradeEffect('p', 31));
+                    if (hasUpgrade('p', 33)) milkGain = milkGain.times(upgradeEffect('p', 33));
+                    if (hasUpgrade('c', 73)) milkGain = milkGain.times(upgradeEffect('c', 73));
+                    if (hasUpgrade('w', 24)) {milkGain = milkGain.times(upgradeEffect('w', 24));}
                     return "(+" + format(milkGain) + "/sec)"
                 }],
                 "blank",
@@ -149,7 +167,7 @@ addLayer("c", {
                 "blank",
                 ["display-text", "<h3>Milk Upgrades</h3>"],
                 "blank",
-                ["upgrades", [4, 5]]  // Any upgrades placed in the 40+ grid will render on this sub-tab!
+                ["upgrades", [4, 5, 7]]  // Any upgrades placed in the 40+ grid will render on this sub-tab!
             ]
         }
     },
@@ -327,7 +345,7 @@ addLayer("c", {
         32: {
             title: "Crowd Catalysis",
             description: "Customers boost Bean gain.",
-            cost: new Decimal(96),
+            cost: new Decimal(100),
             unlocked() { return hasUpgrade('c', 31) },
             effect() { 
                 return player.p.customers.add(1).pow(0.08); 
@@ -337,7 +355,7 @@ addLayer("c", {
         33: {
             title: "BEANZ TAKE OVER",
             description: "Beans multiply Beans.",
-            cost: new Decimal(105),
+            cost: new Decimal(120),
             unlocked() { return hasUpgrade('c', 32) },
             effect() {
                 return player.points.add(1).pow(0.045)
@@ -348,7 +366,7 @@ addLayer("c", {
         34: {
             title: "Scientific Franchise",
             description: "Customers are multiplied by Classic Macchiato recipe level.",
-            cost: new Decimal(130),
+            cost: new Decimal(166),
             unlocked() { return hasUpgrade('c', 33) },
             effect() {
                 let macchLevel = getBuyableAmount('l', 51);
@@ -359,7 +377,7 @@ addLayer("c", {
         35: {
             title: "The Grand Espresso",
             description: "Every upgrade purchased x1.12 boost Espresso Lab Recipes.",
-            cost: new Decimal(200),
+            cost: new Decimal(208),
             unlocked() { return hasUpgrade('c', 34) }, // Star Milestone 1 (2 Stars)
             effect() {
                 let totalUpgs = (player.c.upgrades?.length || 0) + 
@@ -369,6 +387,80 @@ addLayer("c", {
                 return new Decimal(1.12).pow(totalUpgs);
             },
             effectDisplay() { return format(this.effect()) + "x" }
+        },
+        61: {
+            title: "ULTIMATE VIP Brewing",
+            description: "VIP's boost passive Coffee Cup generation per OoM.",
+            cost: new Decimal(4e3), 
+            unlocked() { return hasMilestone('s', 3) }, // Revealed natively when you hit 4 Stars!
+            effect() {
+                // 🌟 SYNCED PATH: Directly pulls your exact variable name from popularity ('p')
+                let vips = player.p.vipCustomers || new Decimal(0);
+                
+                // THE ORDER OF MAGNITUDE FORMULA: Takes the log10 of your VIP count!
+                let vipOoM = vips.add(1).log10();
+                
+                if (hasUpgrade('c', 61)) return vipOoM;
+                return new Decimal(0);
+            },
+            effectDisplay() { return "+" + format(this.effect(), 2) + "/s" },
+        },
+        62: {
+            title: "Caffeinated Brainstorming",
+            description: "Coffee Cups divide Lab Upgrade costs.",
+            cost: new Decimal(3e4),
+            unlocked() { return hasUpgrade('c', 61) },
+            effect() {
+                // 🛡️ THE LOGARITHMIC CURVE: Extracts the order of magnitude of your Coffee Cups safely!
+                let cupsLog = player.c.points.add(1).log10();
+                
+                // Formula: 1.25 raised to the power of log10(Coffee Cups + 1)
+                // This gives a powerful but stable multiplier that scales seamlessly into high exponents.
+                return new Decimal(1.5).pow(cupsLog);
+            },
+            effectDisplay() { return " /" + format(this.effect()) },
+        },
+        63: {
+            title: "Self-Refilling Cups",
+            description: "Coffee Cups boost itself.",
+            cost: new Decimal(2.5e5), // Balanced right after Upgrade 62
+            unlocked() { return hasUpgrade('c', 62) }, // Flows cleanly down Row 6
+            effect() {
+                // 1. Fetch your current total Coffee Cups balance
+                let cups = player.c.points || new Decimal(0);
+                
+                // 🛡️ THE LOGARITHMIC ESCALATION: Extracts the Order of Magnitude (OoM) safely
+                let cupsLog = cups.add(1).log10();
+                
+                // 📊 THE BALANCED MULTIPLIER SCALING: 
+                // We multiply the raw log count by a controlled factor (like times 0.50).
+                // Example at 1e100 Cups: (100 * 0.50) = +50.00/sec added straight to your passive velocity!
+                return cupsLog.pow(1.12);
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        64: {
+            title: "Extra Spicy Beans",
+            description: "1e50x Beans.",
+            cost: new Decimal(5e6), // Balanced right after Upgrade 63
+            unlocked() { return hasUpgrade('c', 63) }, // Flows cleanly down Row 6
+            effect() {
+                return new Decimal("1e50");
+            },
+            effectDisplay() { return format(this.effect()) + "x" }
+        },
+        65: {
+            title: "MATRIX DIVIDER",
+            description: "Divide Lab Upgrade costs one last time...",
+            cost: new Decimal(2.5e8),
+            unlocked() { return hasUpgrade('c', 64) },
+            effect() {
+                let cups = player.c.points || new Decimal(0);
+                let cupsLog2 = cups.add(1).log2();
+        
+                return new Decimal(1.38).pow(cupsLog2);
+            },
+            effectDisplay() { return "/" + format(this.effect(), 2) },
         },
         
         // --- MILK UPGRADES ---
@@ -517,7 +609,7 @@ addLayer("c", {
         53: {
             title: "Elites like Milk",
             description: "Milk boosts VIP Customers again.",
-            cost: new Decimal("1e101"), 
+            cost: new Decimal("1e108"), 
             
             effect() {
                 // Re-calculates your current base milk gain to create a scaling multiplier
@@ -534,7 +626,7 @@ addLayer("c", {
         54: {
             title: "What makes Beans + Milk?",
             description: "Milk multiplies Beans.",
-            cost: new Decimal("3.8e138"),
+            cost: new Decimal("4.5e145"),
             effect() {
                 return player[this.layer].milk.add(1.25).pow(0.055);
             },
@@ -550,13 +642,18 @@ addLayer("c", {
         55: {
             title: "The Grand Macchiato",
             description: "Milk floods the Espresso Lab Recipes.",
-            cost: new Decimal("1e185"), 
+            cost: new Decimal("1e183"), 
             unlocked() { 
                 return hasUpgrade('c', 54); // Reveals itself once you buy the preceding milk upgrade
             },
             effect() {
                 let milkExponentSteps = player.c.milk.add(1).log10();
-                return new Decimal(1.055).pow(milkExponentSteps);
+                let baseEffect = new Decimal(1.055).pow(milkExponentSteps);
+                
+                if (hasUpgrade('c', 74)) {
+                    baseEffect = baseEffect.times(upgradeEffect('c', 74));
+                }
+                return baseEffect;
             },
             currencyDisplayName: "Milk",
             currencyInternalName: "milk",
@@ -566,6 +663,88 @@ addLayer("c", {
                 return format(this.effect()) + "x" 
             }
         },
+        71: {
+            title: "Premium Marketing Blend",
+            description: "Milk boosts VIP Customers.",
+            cost: new Decimal("1e421"), 
+            
+            effect() {
+                // Re-calculates your current base milk gain to create a scaling multiplier
+                let baseMilkGen = player.points.add(1).pow(0.45);
+                // Logarithmic formula: log10(Base Milk + 1) * 1.5 + 1
+                return baseMilkGen.add(1).log10().times(0.5).add(1);
+            },
+            effectDisplay() { return format(this.effect()) + "x" },
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            currencyLocation() { return player.c },
+            unlocked() { return hasMilestone('s', 3) }
+        },
+        72: {
+            title: "Lactosed Automation Tuning",
+            description: "How can Milk boost a VIP Party?",
+            cost: new Decimal("1e470"),
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            unlocked() { return hasUpgrade('c', 71) }, 
+            effect() {
+                let milk = player.c.milk || new Decimal(0);
+                let milkLog = milk.add(1).log10();
+
+                return new Decimal(1.05).pow(milkLog);
+            },
+            effectDisplay() { return format(this.effect()) + "x" },
+            
+        },
+        73: {
+            title: "No milk = no Coffee?",
+            description: "Coffee Cups boost Milk",
+            cost: new Decimal("1e570"),
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            unlocked() { return hasUpgrade('c', 72) },
+            effect() {
+                let cups = player.c.points;
+
+                return new Decimal(1.25).pow(cups.add(1).pow(0.27));
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
+        },
+        74: {
+            title: "Lab Infusion",
+            description: "Improve upgrade 55.",
+            cost: new Decimal("1e590"), 
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            unlocked() { return hasUpgrade('c', 73) },
+            effect() {
+                let milk = player.c.milk;
+                
+                return new Decimal(1.05).pow(milk.add(1).log10().div(1.5));
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
+        },
+        75: {
+            title: "ULTIMATE DIVIDER",
+            description: "Divide Lab Upgrade costs again...",
+            cost: new Decimal("1e1600"),
+            currencyDisplayName: "Milk",
+            currencyInternalName: "milk",
+            currencyLayer: "c",
+            unlocked() { return hasUpgrade('c', 74) },
+            effect() {
+                let milk = player.c.milk;
+                let milkLog10 = milk.add(1).log10().log10();
+
+                return new Decimal(10).pow(milkLog10);
+            },
+            effectDisplay() { return "/" + format(this.effect(), 2) },
+        },
+        
         
     },
     

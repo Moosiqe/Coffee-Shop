@@ -26,6 +26,9 @@ addLayer("w", { // "w" for Supply Warehouse
     },
     baseResource: "Beans",
     baseAmount() { return player.points },
+    resetsNothing() {
+        return hasMilestone('s', 3);
+    },
 
     // Reveals itself visually when the player reaches the Star 3 barrier
     layerShown() { 
@@ -39,17 +42,17 @@ addLayer("w", { // "w" for Supply Warehouse
     // 🎨 CLASSIC TMT DASHBOARD BUILDER
     tabFormat: [
         "main-display",
-        "prestige-button", // Natively draws a beautiful, un-crashable prestige button!
+        "prestige-button",
         "blank",
         "hr",
         "blank",
         ["display-text", "<h3>Warehouse Logistical Upgrades</h3>"],
         "blank",
-        "upgrades" // Draws your clean upgrade grid panel seamlessly
+        "upgrades" 
     ],
 
     upgrades: {
-        rows: 1,
+        rows: 2,
         cols: 5,
         
         11: {
@@ -58,33 +61,26 @@ addLayer("w", { // "w" for Supply Warehouse
             cost: new Decimal(3),
             effect() {
                 let labPoints = player.l.researchPoints || new Decimal(0);
-                
-                // ⚡ MAXIMUM VELOCITY: No logs, no roots. Just pure, un-throttled scaling!
-                // Every single Research Point you earn adds another compounding step to your multiplier.
-                // At 500 Research Points -> 1.05^500 = a massive 3.9e10x global Bean multiplier!
                 return new Decimal(1.05).pow(labPoints);
             },
             effectDisplay() { return format(this.effect()) + "x Beans" },
         },
         12: {
             title: "Moree Coffee Cups",
-            description: "Each Warehouse Upgrade you own adds +1/s to Coffee Cups",
+            description: "Each Warehouse Upgrade you own adds +5/s to Coffee Cups",
             cost: new Decimal(6),
             unlocked() { return hasUpgrade('w', 11) },
             effect() {
-                // Counts how many total upgrades are bought in this Warehouse layer ('w')
                 let upgCount = player.w.upgrades ? player.w.upgrades.length : 0;
                 
-                // If they bought this upgrade, add +1/sec per owned upgrade. 
-                // (e.g. If you own 3 upgrades total, it returns +3 to add to the base 1)
-                if (hasUpgrade('w', 12)) return new Decimal(upgCount);
+                if (hasUpgrade('w', 12)) return new Decimal(upgCount).times(5);
                 return new Decimal(0);
             },
             effectDisplay() { return "+" + formatWhole(this.effect()) + "/s" },
         },
         13: {
             title: "Quantum Pumping",
-            description: "Permits and RP synergistically boost Milk.",
+            description: "RP boosts Milk.",
             cost: new Decimal(7),
             effect() {
                 let labPoints = player.l.researchPoints || new Decimal(0);
@@ -92,7 +88,7 @@ addLayer("w", { // "w" for Supply Warehouse
 
                 return new Decimal(1.07).pow(labPoints);
             },
-            effectDisplay() { return format(this.effect()) + "x Milk" },
+            effectDisplay() { return format(this.effect()) + "x" },
             unlocked() { return hasUpgrade('w', 12) },
         },
         14: {
@@ -101,14 +97,17 @@ addLayer("w", { // "w" for Supply Warehouse
             cost: new Decimal(9), 
             effect() {
                 let permits = player.w.points;
-                
-                // 🛡️ THE LOGARITHMIC SHIELD: Extracts the order of magnitude of permits safely!
                 let permitsLog = permits.add(1).log10();
                 
-                // Formula: 1.35 raised to the power of log10(permits + 1)
-                // This guarantees the cost divider and speed multiplier scale beautifully 
-                // without ever running away into un-balanced infinity arrays!
-                return new Decimal(1.30).pow(permitsLog);
+                // 1. Calculate your original baseline formula
+                let baseEffect = new Decimal(2.8).pow(permitsLog);
+                
+                // 🌌 WIRE THE OVERCLOCK: Directly multiply the overall dividing effect by Upgrade 23!
+                if (hasUpgrade('w', 23)) {
+                    baseEffect = baseEffect.times(upgradeEffect('w', 23));
+                }
+                
+                return baseEffect;
             },
              effectDisplay() { return " /" + format(this.effect()) },
             unlocked() { return hasUpgrade('w', 13) },
@@ -120,18 +119,68 @@ addLayer("w", { // "w" for Supply Warehouse
             
             effect() {
                 let labPoints = player.l.researchPoints || new Decimal(0);
-                
-                // 🛡️ DAMPENED LOG MATRIX: Extracts the magnitude of your Research Points
                 let rawLog = labPoints.add(1).log10();
                 
-                // 📊 THE BALANCE TWEAK: Multiplying by 0.10 slows down the reduction curve.
-                // At 10,000 RP: 1 + (4 * 0.10) = 1.40x divider (Exponent drops to 0.35)
-                // At 1,000,000 RP: 1 + (6 * 0.10) = 1.60x divider (Exponent drops to 0.31)
-                // This keeps your pacing perfectly smooth and stops the curve from collapsing!
                 return new Decimal(1).add(rawLog.times(0.01));
             },
             effectDisplay() { return " /" + format(this.effect(), 3) },
             unlocked() { return hasUpgrade('w', 14) },
+        },
+        21: {
+            title: "Chemical Prestige",
+            description: "RP boosts VIP Customers.",
+            cost: new Decimal(12),
+            unlocked() { return hasMilestone('s', 3) },
+             effect() {
+                let labPoints = player.l.researchPoints ? new Decimal(player.l.researchPoints) : new Decimal(0);
+                let rpLog = labPoints.add(1).log10();
+                
+                return new Decimal(3.50).pow(rpLog);
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
+        },
+        22: {
+            title: "Coffee Belts Rollin'",
+            description: "Just x3/s Coffee Cups ",
+            cost: new Decimal(13),
+            unlocked() { return hasUpgrade('w', 21) },
+            effect() {
+                if (hasUpgrade('w', 22)) return new Decimal(3);
+                return new Decimal(1);
+            },
+            effectDisplay() { return format(this.effect(),0) + "x" },
+        },
+        23: {
+            title: "Synergistic Overhaul",
+            description: "Boosts Upgrade 14's power based on Permits.",
+            cost: new Decimal(15),
+            unlocked() { return hasUpgrade('w', 22) },
+             effect() {
+                return player.w.points.add(1).pow(1.01);
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
+        },
+        24: {
+            title: "Mass Logistics",
+            description: "Multiply Milk & Customers by 1e20x.",
+            cost: new Decimal(18),
+            unlocked() { return hasUpgrade('w', 23) }, 
+            effect() {
+                return new Decimal("1e20");
+            },
+            effectDisplay() { return format(this.effect(),0) + "x" },
+        },
+        25: {
+            title: "Industrial Cups",
+            description: "Coffee Cups go to the next level.",
+            cost: new Decimal(25), // Capstone price for the Row 2 branch!
+            unlocked() { return hasUpgrade('w', 24) },
+            effect() {
+                let permits = player.w.points || new Decimal(0);
+                
+                return new Decimal(1.50).pow(permits);
+            },
+            effectDisplay() { return format(this.effect(), 2) + "x" },
         },
     },
 

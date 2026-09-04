@@ -24,10 +24,10 @@ addLayer("s", { // "s" for Stars
         let currentStars = new Decimal(x);
 
         if (currentStars.eq(0)) return new Decimal(5e49);
-        if (currentStars.eq(1)) return new Decimal(2.5e120);
-        if (currentStars.eq(2)) return new Decimal("5e999");
-        if (currentStars.eq(3)) return new Decimal("5e1109");
-        if (currentStars.eq(4)) return new Decimal("5e4999");
+        if (currentStars.eq(1)) return new Decimal(2.5e130);
+        if (currentStars.eq(2)) return new Decimal("5e949");
+        if (currentStars.eq(3)) return new Decimal("5e1114");
+        if (currentStars.eq(4)) return new Decimal(1e309);
 
         return new Decimal("1e10000"); 
     },
@@ -77,9 +77,7 @@ addLayer("s", { // "s" for Stars
                     buyUpgrade('p', l);
                 }
             }
-            let levelsToAdd = new Decimal(50).times(diff);
 
-            // Tier 11: Espresso Baristas (Checks and adds independently)
             if (canBuyBuyable('b', 11)) buyBuyable('b', 11);
             if (canBuyBuyable('b', 12)) buyBuyable('b', 12);
             
@@ -137,13 +135,13 @@ addLayer("s", { // "s" for Stars
         3: {
             requirementDescription: "⭐⭐⭐⭐ 4 Coffee Shop Stars",
             done() { return player.s.points.gte(4) },
-            effectDescription: "- Unlock the Ultimate Upgrades on almost every layer <br> - Auto-Collect Popularity and Baristas <br> - Auto-Buy Bean and Milk Units" ,
+            effectDescription: "- Unlock the Ultimate Upgrades on almost every layer <br> - Auto-Collect Popularity and Baristas <br> - Auto-Buy Bean and Milk Data" ,
             unlocked() {return hasMilestone('s', 2)},
         },
         4: {
             requirementDescription: "⭐⭐⭐⭐⭐ 5 Coffee Shop Stars",
             done() { return player.s.points.gte(5) },
-            effectDescription: "- Unlock the next layer of the game.",
+            effectDescription: "- Unlock the next layer of the game. (Coming Soon!)",
             unlocked() {return hasMilestone('s', 3)},
         }
     },

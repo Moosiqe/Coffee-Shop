@@ -194,8 +194,13 @@ addLayer("b", { // "b" for Baristas
                        "Effect: Multiplies VIP Customers by " + format(buyableEffect(this.layer, this.id)) + "x"
             },
             effect(x) {
-                // Compounding Formula: Every level purchased grants a compounding 1.5x speed boost to VIP arrivals
-                return new Decimal(1.25).pow(x);
+                let level = x || getBuyableAmount(this.layer, this.id);
+                let baseBoost = new Decimal(1.25).pow(level);
+
+                if (hasUpgrade('c', 72)) {
+                    baseBoost = baseBoost.times(upgradeEffect('c', 72));
+                }
+                return baseBoost;
             },
             canAfford() { 
                 // Explicitly checks against your Barista prestige points wallet balance!

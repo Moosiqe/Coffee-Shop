@@ -240,6 +240,15 @@ addLayer("l", { // "l" for Espresso Lab
                 if (hasUpgrade('w', 14)) {
                     baseCost = baseCost.div(upgradeEffect('w', 14));
                 }
+                if (hasUpgrade('c', 62)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 62));
+                }
+                if (hasUpgrade('c', 75)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 75));
+                }
+                if (hasUpgrade('p', 35)) {
+                    baseCost = baseCost.div(upgradeEffect('p', 35));
+                }
                 return baseCost.floor();
             },
             effect(x) {
@@ -277,6 +286,15 @@ addLayer("l", { // "l" for Espresso Lab
                     if (hasUpgrade('w', 14)) {
                         baseCost = baseCost.div(upgradeEffect('w', 14));
                     }
+                    if (hasUpgrade('c', 62)) {
+                        baseCost = baseCost.div(upgradeEffect('c', 62));
+                    }
+                    if (hasUpgrade('c', 75)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 75));
+                    }
+                    if (hasUpgrade('p', 35)) {
+                    baseCost = baseCost.div(upgradeEffect('p', 35));
+                    }
                     return baseCost.floor();
                 },
             effect(x) {
@@ -313,6 +331,15 @@ addLayer("l", { // "l" for Espresso Lab
                 // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
                 if (hasUpgrade('w', 14)) {
                     baseCost = baseCost.div(upgradeEffect('w', 14));
+                }
+                if (hasUpgrade('c', 62)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 62));
+                }
+                if (hasUpgrade('c', 75)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 75));
+                }
+                if (hasUpgrade('p', 35)) {
+                    baseCost = baseCost.div(upgradeEffect('p', 35));
                 }
                 return baseCost.floor();
             },
