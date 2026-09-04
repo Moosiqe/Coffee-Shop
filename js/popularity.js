@@ -28,6 +28,12 @@ addLayer("p", {
     canBuyMax() { 
         return hasMilestone('s', 0); 
     },
+    autoPrestige() {
+        return hasMilestone('s', 3); 
+    },
+    resetsNothing() {
+        return hasMilestone('s', 3);
+    },
 
     update(diff) {
         if (player.p.unlocked) { 
@@ -154,9 +160,29 @@ addLayer("p", {
             description: "Customers multiply Beans.",
             cost: new Decimal(15),
             effect() {
-                return player[this.layer].customers.add(1).pow(0.3)
+                // 1. Calculate your original, raw customer formula
+                let baseEffect = player[this.layer].customers.add(1).pow(0.3);
+                
+                // 🌟 THE DIMINISHING POWER SHIELD 🌟
+                // If the calculation attempts to spike past 1e250, drop the dampening filter!
+                if (baseEffect.gt("1e100")) {
+                    let excess = baseEffect.div("1e100");
+                    
+                    // Extracts the excess value and applies a crushing ^0.10 power dampener,
+                    // allowing it to scale smoothly into the endgame without leaking calculation arrays!
+                    baseEffect = new Decimal("1e100").times(excess.pow(0.1));
+                }
+                return baseEffect;
             },
-            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
+            effectDisplay() { 
+                let rawEffect = player[this.layer].customers.add(1).pow(0.3);
+                
+                // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
+                if (rawEffect.gt("1e100")) {
+                    return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
+                }
+                return format(this.effect()) + "x"; 
+            },
             // --- ADD THESE 3 LINES TO CHANGE THE CURRENCY ---
             currencyDisplayName: "Customers",       // The name shown when you hover over the cost
             currencyInternalName: "customers",      // The exact variable name inside startData()
@@ -217,12 +243,28 @@ addLayer("p", {
             description: "Customers like BEANSS so much now.",
             cost: new Decimal(5e11), // Costs 2,500 Customers (A solid mid-to-late goal)
             effect() {
-                // Formula: (Customers ^ 0.4) + 1
-                // When you have 10,000 customers, this will give a massive ~40x boost to Beans!
-                return player[this.layer].customers.add(1).pow(0.44);
+                // 1. Calculate your original, raw customer formula
+                let baseEffect = player[this.layer].customers.add(1).pow(0.44);
+                
+                // 🌟 THE DIMINISHING POWER SHIELD 🌟
+                // If the calculation attempts to spike past 1e250, drop the dampening filter!
+                if (baseEffect.gt("1e100")) {
+                    let excess = baseEffect.div("1e100");
+                    
+                    // Extracts the excess value and applies a crushing ^0.10 power dampener,
+                    // allowing it to scale smoothly into the endgame without leaking calculation arrays!
+                    baseEffect = new Decimal("1e100").times(excess.pow(0.1));
+                }
+                return baseEffect;
             },
             effectDisplay() { 
-                return format(upgradeEffect(this.layer, this.id)) + "x" 
+                let rawEffect = player[this.layer].customers.add(1).pow(0.44);
+                
+                // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
+                if (rawEffect.gt("1e100")) {
+                    return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
+                }
+                return format(this.effect()) + "x"; 
             },
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      

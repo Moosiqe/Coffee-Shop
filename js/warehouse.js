@@ -67,27 +67,20 @@ addLayer("w", { // "w" for Supply Warehouse
             effectDisplay() { return format(this.effect()) + "x Beans" },
         },
         12: {
-            title: "Lab Synergy",
-            description: "Coffee Cups exponent is divided by RP.",
+            title: "Moree Coffee Cups",
+            description: "Each Warehouse Upgrade you own adds +1/s to Coffee Cups",
             cost: new Decimal(6),
+            unlocked() { return hasUpgrade('w', 11) },
             effect() {
-                // Grabs the total levels of your recipe buyables (51, 52, 53)
-                let b51 = getBuyableAmount('l', 51);
-                let b52 = getBuyableAmount('l', 52);
-                let b53 = getBuyableAmount('l', 53);
-                let totalRecipeLevels = b51.add(b52).add(b53);
+                // Counts how many total upgrades are bought in this Warehouse layer ('w')
+                let upgCount = player.w.upgrades ? player.w.upgrades.length : 0;
                 
-                // 🛡️ THE LOGARITHMIC ANCHOR: Extracts the order of magnitude of their lab recipe levels cleanly!
-                let recipeLog = totalRecipeLevels.add(1).log10();
-                
-                // Controlled Curve Divider formula: 1 + (log10(levels + 1) * 0.1)
-                // This ensures that even at thousands of levels, the divider stays low enough 
-                // to protect your static pricing wall from completely collapsing below 1.0!
-                return new Decimal(1).add(recipeLog.times(0.05));
+                // If they bought this upgrade, add +1/sec per owned upgrade. 
+                // (e.g. If you own 3 upgrades total, it returns +3 to add to the base 1)
+                if (hasUpgrade('w', 12)) return new Decimal(upgCount);
+                return new Decimal(0);
             },
-            effectDisplay() { return " /" + format(this.effect(), 3) },
-            //unlocked() { return hasUpgrade('w', 11) },
-            unlocked() { return true }
+            effectDisplay() { return "+" + formatWhole(this.effect()) + "/s" },
         },
         13: {
             title: "Quantum Pumping",
@@ -100,8 +93,7 @@ addLayer("w", { // "w" for Supply Warehouse
                 return new Decimal(1.07).pow(labPoints);
             },
             effectDisplay() { return format(this.effect()) + "x Milk" },
-            //unlocked() { return hasUpgrade('w', 12) },
-            unlocked() { return true }
+            unlocked() { return hasUpgrade('w', 12) },
         },
         14: {
             title: "Precision Warehousing",
@@ -119,8 +111,7 @@ addLayer("w", { // "w" for Supply Warehouse
                 return new Decimal(1.30).pow(permitsLog);
             },
              effectDisplay() { return " /" + format(this.effect()) },
-            //unlocked() { return hasUpgrade('w', 13) },
-            unlocked() { return true }
+            unlocked() { return hasUpgrade('w', 13) },
         },
          15: {
             title: "Synergy Optimization",
@@ -137,11 +128,10 @@ addLayer("w", { // "w" for Supply Warehouse
                 // At 10,000 RP: 1 + (4 * 0.10) = 1.40x divider (Exponent drops to 0.35)
                 // At 1,000,000 RP: 1 + (6 * 0.10) = 1.60x divider (Exponent drops to 0.31)
                 // This keeps your pacing perfectly smooth and stops the curve from collapsing!
-                return new Decimal(1).add(rawLog.times(0.025));
+                return new Decimal(1).add(rawLog.times(0.01));
             },
             effectDisplay() { return " /" + format(this.effect(), 3) },
-            //unlocked() { return hasUpgrade('w', 14) },
-            unlocked() { return true }
+            unlocked() { return hasUpgrade('w', 14) },
         },
     },
 

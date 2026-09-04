@@ -22,6 +22,12 @@ addLayer("b", { // "b" for Baristas
     canBuyMax() { 
         return hasMilestone('s', 0); 
     },
+    autoPrestige() {
+        return hasMilestone('s', 3); 
+    },
+    resetsNothing() {
+        return hasMilestone('s', 3);
+    },
 
      update(diff) {
         // --- STAR MILESTONE 1: AUTOMATED BARISTA HIRING ---
@@ -84,7 +90,21 @@ addLayer("b", { // "b" for Baristas
         11: {
             title: "Barista Efficiency",
             cost(x) { 
-                return new Decimal(50).times(new Decimal(1.75).pow(x)) 
+                // 1. Fetch current target tier purchase count index
+                let level = x || getBuyableAmount(this.layer, this.id);
+                
+                // 2. Base Exponential scaling rule before reaching the threshold
+                let baseScaling = new Decimal(1.75).pow(level);
+                
+                // 🌟 THE STAR 4 ERAS LEVEL 500 NERF MATRIX 🌟
+                // If the buyable level crosses 500, aggressively warp the cost exponent!
+                if (level.gte(1000)) {
+                    let excess = level.sub(1000);
+                    // Standard cost base multiplied by an additional compounding exponent wall (e.g., ^1.8)
+                    baseScaling = baseScaling.times(new Decimal(1.5).pow(excess.pow(1.5)));
+                }
+                
+                return new Decimal(1).times(baseScaling).floor();
             },
             display() { 
                 return "Train your baristas to work faster.\n\n" +
@@ -120,8 +140,21 @@ addLayer("b", { // "b" for Baristas
         12: {
             title: "Advanced Frothing Technique",
             cost(x) { 
-                // Costs 250 * (1.6 ^ level) Customers (slightly pricier than the first training)
-                return new Decimal(250).times(new Decimal(1.6).pow(x)) 
+                // 1. Fetch current target tier purchase count index
+                let level = x || getBuyableAmount(this.layer, this.id);
+                
+                // 2. Base Exponential scaling rule before reaching the threshold
+                let baseScaling = new Decimal(1.6).pow(level);
+                
+                // 🌟 THE STAR 4 ERAS LEVEL 500 NERF MATRIX 🌟
+                // If the buyable level crosses 500, aggressively warp the cost exponent!
+                if (level.gte(1000)) {
+                    let excess = level.sub(1000);
+                    // Standard cost base multiplied by an additional compounding exponent wall (e.g., ^1.8)
+                    baseScaling = baseScaling.times(new Decimal(1.5).pow(excess.pow(1.5)));
+                }
+                
+                return new Decimal(1).times(baseScaling).floor();
             },
             display() { 
                 return "Train your baristas in microfoam styling.\n\n" +

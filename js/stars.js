@@ -26,8 +26,8 @@ addLayer("s", { // "s" for Stars
         if (currentStars.eq(0)) return new Decimal(5e49);
         if (currentStars.eq(1)) return new Decimal(2.5e120);
         if (currentStars.eq(2)) return new Decimal("5e999");
-        if (currentStars.eq(3)) return new Decimal("5e1159");
-        if (currentStars.eq(4)) return new Decimal("1e5000");
+        if (currentStars.eq(3)) return new Decimal("5e1109");
+        if (currentStars.eq(4)) return new Decimal("5e4999");
 
         return new Decimal("1e10000"); 
     },
@@ -80,16 +80,8 @@ addLayer("s", { // "s" for Stars
             let levelsToAdd = new Decimal(50).times(diff);
 
             // Tier 11: Espresso Baristas (Checks and adds independently)
-            if (canBuyBuyable('b', 11)) {
-                let currentAmt11 = getBuyableAmount('b', 11);
-                setBuyableAmount('b', 11, currentAmt11.add(levelsToAdd));
-            }
-
-            // Tier 12: Latte Baristas (Checks and adds independently)
-            if (canBuyBuyable('b', 12)) {
-                let currentAmt12 = getBuyableAmount('b', 12);
-                setBuyableAmount('b', 12, currentAmt12.add(levelsToAdd));
-            }
+            if (canBuyBuyable('b', 11)) buyBuyable('b', 11);
+            if (canBuyBuyable('b', 12)) buyBuyable('b', 12);
             
         }
         
@@ -139,7 +131,7 @@ addLayer("s", { // "s" for Stars
         2: {
             requirementDescription: "⭐⭐⭐ 3 Coffee Shop Stars",
             done() { return player.s.points.gte(3) },
-            effectDescription: "- Unlock Warehouse <br> - A lot more Automation",
+            effectDescription: "- Unlock Warehouse <br> - A lot more Automation <br> - Turn Coffee Cups Passive",
             unlocked() {return hasMilestone('s', 1)},
         },
         3: {

@@ -14,13 +14,7 @@ addLayer("c", {
     baseResource: "Beans", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent() {
-        let baseExp = new Decimal(1.375);
-        if (hasUpgrade('w', 12)) {
-            baseExp = baseExp.div(upgradeEffect('w', 12));
-        }
-        return baseExp;
-    },
+    exponent: 1.375, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         return mult
@@ -29,20 +23,46 @@ addLayer("c", {
         return new Decimal(1)
     },
     autoPrestige() {
+        // 🌟 SAFETY UPGRADE: Turn off autoPrestige if they have passive generation active!
+        // This ensures the engine doesn't accidentally run both systems at once.
+        if (hasMilestone('s', 2)) return false; 
         if (hasMilestone('s', 1)) return true;
         return false;
     },
+    
+    canBuyMax() { 
+        let hasUnlockMilestone = hasMilestone('s', 0) || hasMilestone('p', 0);
+        let automationIsOff = !hasMilestone('s', 1) && !hasMilestone('s', 2);
+        return hasUnlockMilestone && automationIsOff; 
+    },
+
+    // 🌟 THE STAR 3 ERA PASSIVE GENERATION ENGINE 🌟
+    // Automatically runs smoothly every single game frame tick!
+    passiveGeneration() {
+         if (hasMilestone('s', 2)) {
+            let basePassive = new Decimal(1);
+            
+            // 🌌 WAREHOUSE OVERCLOCK: If you buy Upgrade 12, ADD the scaling factor cleanly!
+            if (hasUpgrade('w', 12)) {
+                basePassive = basePassive.add(upgradeEffect('w', 12));
+            }
+            return basePassive;
+        }
+        
+        return new Decimal(0); // Locked out during the early game layers
+    },
     canReset() {
+        // If passive generation is active (Star Milestone 2 / 3 Stars), 
+        // hard-lock manual resets to FALSE instantly.
+        if (hasMilestone('s', 2)) return false;
+
+        // Otherwise, allow standard manual resets if they have enough Beans!
         return player.points.gte(getNextAt("c"));
     },
     resetsNothing() { 
         return hasMilestone('s', 0); 
     },
-    canBuyMax() { 
-        return hasMilestone('s', 0) || hasMilestone('p', 0); 
-    },
     
-
     update(diff) {
        if (player.c.milkTabUnlocked) {  
             
@@ -82,7 +102,10 @@ addLayer("c", {
         "Brewing": {
             content: [
                 "main-display",
-                "prestige-button",
+                function() {
+                    if (hasMilestone('s', 2)) return ""; // Hides it entirely!
+                    return "prestige-button"; // Draws it normally in the early game.
+                },
                 "blank",
                 "hr",
                 "blank",
@@ -156,7 +179,7 @@ addLayer("c", {
     },
     
     upgrades: {
-        rows: 4, 
+        rows: 7, 
         cols: 5, 
         // --- COFFEE CUPS UPGRADES ---
         11: {
@@ -347,20 +370,35 @@ addLayer("c", {
             },
             effectDisplay() { return format(this.effect()) + "x" }
         },
+        
         // --- MILK UPGRADES ---
         41: {
             title: "Condensed Creamer",
             description: "Milk multiplies Beans.",
             cost: new Decimal(250),
             effect() {
-                // formula: (Milk ^ 0.40) + 1. 
-                // The "+ 1" ensures your multiplier is at least 1x so your game doesn't crash when milk is 0!
-                // The ".pow(0.4)" keeps the growth balanced so numbers don't explode into infinity too fast.
-                return player[this.layer].milk.add(1).pow(0.40);
+                // 1. Calculate your original raw formula (e.g., scaling based on milk)
+                let baseEffect = player.c.milk.add(1).pow(0.4); // Replace pow/formula with your exact original if different
+                
+                // 🌟 THE DIMINISHING POWER SHIELD 🌟
+                // Triggers a progressive softcap if the effect crosses 1e300
+                if (baseEffect.gt("1e150")) {
+                    let excess = baseEffect.div("1e150");
+                    
+                    // Applies a 0.1 power dampener to the excess, flattening the curve safely
+                    baseEffect = new Decimal("1e150").times(excess.pow(0.1));
+                }
+                return baseEffect;
             },
             // This updates the button text in real-time so players can see the exact active boost
             effectDisplay() { 
-                return format(upgradeEffect(this.layer, this.id)) + "x" 
+                let rawEffect = player.c.milk.add(1).pow(0.4);
+                
+                // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
+                if (rawEffect.gt("1e150")) {
+                    return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
+                }
+                return format(this.effect()) + "x"; 
             },
             currencyDisplayName: "Milk",
             currencyInternalName: "milk",
@@ -438,6 +476,7 @@ addLayer("c", {
             currencyLocation() { return player.c },
             unlocked() { return hasUpgrade('c', 44) } // Chains cleanly after 44
         },
+        
         51: {
             title: "Condensed Milk Chemistry",
             description: "Milk multiplied by Baristas.",
@@ -527,6 +566,7 @@ addLayer("c", {
                 return format(this.effect()) + "x" 
             }
         },
+        
     },
     
 })

@@ -22,7 +22,57 @@ addLayer("l", { // "l" for Espresso Lab
     
     color: "#9B59B6", // A beautiful scientific amethyst purple
     type: "none", // Since it uses your top exchangers, it doesn't need a default prestige button
-    
+     update(diff) {
+        // --- 🧪 THE STAR 3 BALANCED LAB AUTOMATOR MATRIX ---
+        if (hasMilestone('s', 3)) {
+            
+            // 1. Calculate the maximum fractional allocation window allowed for this frame tick slice
+            let maxLevelsThisFrame = new Decimal(25).times(diff);
+
+            // 🔬 Buyable 11 Independent Automation (Beans Matrix)
+            if (canBuyBuyable('l', 11)) {
+                // Find the absolute maximum number of levels your Beans wallet can legally afford right now
+                let maxAffordable11 = player.points.div(layers.l.buyables[11].cost());
+                
+                // Clamp the purchase size so it never exceeds your +25/sec limit or what you can actually afford
+                let actualBought11 = Decimal.min(maxLevelsThisFrame, maxAffordable11).floor();
+
+                if (actualBought11.gt(0)) {
+                    // Calculate and subtract the total Bean cost for this batch natively
+                    let totalCost11 = layers.l.buyables[11].cost().times(actualBought11);
+                    player.points = player.points.sub(totalCost11);
+
+                    // Update your level tracking counters
+                    let currentAmt11 = getBuyableAmount('l', 11);
+                    setBuyableAmount('l', 11, currentAmt11.add(actualBought11));
+
+                    // 🌟 SYNC UNLOCKED: Mint the EXACT number of Research Points you paid for!
+                    player.l.researchPoints = player.l.researchPoints.add(actualBought11);
+                }
+            }
+
+            // 🔬 Buyable 12 Independent Automation (Milk Matrix)
+            if (canBuyBuyable('l', 12)) {
+                // Find the absolute maximum number of levels your Milk wallet can legally afford right now
+                let maxAffordable12 = player.c.milk.div(layers.l.buyables[12].cost());
+                
+                let actualBought12 = Decimal.min(maxLevelsThisFrame, maxAffordable12).floor();
+
+                if (actualBought12.gt(0)) {
+                    // Calculate and subtract the total Milk cost for this batch natively
+                    let totalCost12 = layers.l.buyables[12].cost().times(actualBought12);
+                    player.c.milk = player.c.milk.sub(totalCost12);
+
+                    // Update your level tracking counters
+                    let currentAmt12 = getBuyableAmount('l', 12);
+                    setBuyableAmount('l', 12, currentAmt12.add(actualBought12));
+
+                    // 🌟 SYNC UNLOCKED: Mint the EXACT number of Research Points you paid for!
+                    player.l.researchPoints = player.l.researchPoints.add(actualBought12);
+                }
+            }
+        }
+    },
     // --- BASELINE INTERFACE LAYOUT ---
     tabFormat: [
         "blank",

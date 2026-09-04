@@ -7,18 +7,10 @@ let modInfo = {
 	discordName: "",
 	discordLink: "",
 	initialStartPoints: new Decimal (1), // Used for hard resets and new players
-	offlineLimit: 1,  // In hours
+	offlineLimit: 0,  // In hours
 }
 
-let rowLayout = {
-    0: ["c"],       // Row 0: Coffee Cups (Centered)
-    1: ["p", "b"],  // Row 1: Popularity and Baristas (Framing the center)
-    
-    // 🌟 THE FIX: Grouping the row elements as an explicit 3-column layout map
-    // We leave an empty string placeholder on the left. This forces the engine's 
-    // centering calculations to treat 's' as the exact horizontal axis center point!
-    2: ["", "s", "l"] 
-}
+
 
 // Set your version in num and name
 let VERSION = {
@@ -133,7 +125,7 @@ var backgroundStyle = {
 
 // You can change this if you have things that can be messed up by long tick lengths
 function maxTickLength() {
-	return(3600) // Default is 1 hour which is just arbitrarily large
+	return(10) // Default is 1 hour which is just arbitrarily large
 }
 
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
