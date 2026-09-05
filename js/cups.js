@@ -457,7 +457,7 @@ addLayer("c", {
             unlocked() { return hasUpgrade('c', 41) }
         },
         43: {
-            title: "Pasteurization Pipeline",
+            title: "Pasteurization",
             description: "Milk multiplies the effectiveness of Barista Efficiency.",
             cost: new Decimal(2.5e5),
             effect() {
@@ -473,7 +473,7 @@ addLayer("c", {
             unlocked() { return hasUpgrade('c', 42) }
         },
         44: {
-            title: "Chilled Storage Tanks",
+            title: "Chilled Tanks",
             description: "Customers multiply Milk.",
             cost: new Decimal(5e6),
             effect() {
@@ -506,7 +506,7 @@ addLayer("c", {
         },
         
         51: {
-            title: "Condensed Milk Chemistry",
+            title: "Milk Chemistry",
             description: "Milk multiplied by Baristas.",
             cost: new Decimal(1e49), 
             unlocked() { 
@@ -523,7 +523,7 @@ addLayer("c", {
             unlocked() { return hasMilestone('s', 1) }
         },
         52: {
-            title: "Premium Marketing Blend",
+            title: "Premium Marketing",
             description: "Milk boosts VIP Customers.",
             cost: new Decimal("1e98"), 
             
@@ -595,7 +595,7 @@ addLayer("c", {
             }
         },
         71: {
-            title: "Premium Marketing Blend",
+            title: "Premium Blending",
             description: "Milk boosts VIP Customers.",
             cost: new Decimal("1e426"), 
             
@@ -611,7 +611,7 @@ addLayer("c", {
             unlocked() { return hasMilestone('s', 3) }
         },
         72: {
-            title: "Lactosed Automation Tuning",
+            title: "Automation Tuning",
             description: "How can Milk boost a VIP Party?",
             cost: new Decimal("4.61e461"),
             currencyDisplayName: "Milk",

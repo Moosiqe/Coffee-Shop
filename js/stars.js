@@ -112,7 +112,7 @@ addLayer("s", {
         0: {
             requirementDescription: "⭐ 1 Coffee Shop Star",
             done() { return player.s.points.gte(1) },
-            effectDescription: `- Unlock The Espresso Lab <br> - Auto-Buy Row 1-2 Coffee Cups <br> - +^0.03 Beans per Star <br> - Bulk-Buy Coffee Cups, Popularity, and Baristas <br> - Coffee Cups no longer spend Beans`,
+            effectDescription: `- Unlock The Espresso Lab <br> - Auto-Buy Row 1-2 Coffee Cups <br> - ^0.03 Beans per Star <br> - Bulk-Buy Coffee Cups, Popularity, and Baristas <br> - Coffee Cups no longer spend Beans`,
         },
         1: {
             requirementDescription: "⭐⭐ 2 Coffee Shop Stars",

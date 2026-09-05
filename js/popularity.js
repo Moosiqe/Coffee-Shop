@@ -224,7 +224,7 @@ addLayer("p", {
             },
         },
         14: {
-            title: "Viral Marketing",
+            title: "We gone viral",
             description: "THEY NEED SOME MILK!!!",
             cost: new Decimal(1.5e5),
             effect() {
@@ -272,7 +272,7 @@ addLayer("p", {
             unlocked() { return hasMilestone('p', 1) },
         },
         22: {
-            title: "Premium VIP Endorsement",
+            title: "VIP Endorsement",
             description: "VIP's have discovered BEANZ.",
             cost: new Decimal("1e65"),
             currencyDisplayName: "Customers",       
@@ -382,7 +382,7 @@ addLayer("p", {
             effectDisplay() { return format(this.effect()) + "x" },
         },
         33: {
-            title: "High Traffic Flow",
+            title: "Traffic Flow",
             description: "Very basic stuff, Customer x Milk.",
             cost: new Decimal("2.89e289"),
             currencyDisplayName: "Customers",       
@@ -397,7 +397,7 @@ addLayer("p", {
             effectDisplay() { return format(this.effect(), 2) + "x" },
         },
         34: {
-            title: "Viral Lab Marketing",
+            title: "Lab Marketing",
             description: "Improve upgrade 25.",
             cost: new Decimal("1e375"),
             currencyDisplayName: "Customers",       

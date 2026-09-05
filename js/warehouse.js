@@ -92,7 +92,7 @@ addLayer("w", { // "w" for Supply Warehouse
             unlocked() { return hasUpgrade('w', 12) },
         },
         14: {
-            title: "Precision Warehousing",
+            title: "Boxes -> Lab",
             description: "Permits divide Lab Upgrade costs.",
             cost: new Decimal(9), 
             effect() {
@@ -113,7 +113,7 @@ addLayer("w", { // "w" for Supply Warehouse
             unlocked() { return hasUpgrade('w', 13) },
         },
          15: {
-            title: "Synergy Optimization",
+            title: "Optimization",
             description: "RP divides Permit exponent.",
             cost: new Decimal(10), 
             

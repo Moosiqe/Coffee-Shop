@@ -85,9 +85,7 @@ function getPointGen() {
 	if (hasUpgrade('c', 54)) {gain = gain.times(upgradeEffect('c', 54))}
 
 	// --- Lab Upgrades ---
-	if (buyableEffect('l', 51)) {
-		gain = gain.times(buyableEffect('l', 51))
-	}
+	if (buyableEffect('l', 51)) {gain = gain.times(buyableEffect('l', 51))}
 
 	// --- Star Upgrades ---
 	if (player.s.points.gt(0)) {
