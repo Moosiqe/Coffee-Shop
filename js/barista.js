@@ -1,19 +1,19 @@
-addLayer("b", { // "b" for Baristas
+addLayer("b", { 
     name: "Baristas",
     symbol: "B",
-    row: 1, // Sits on Row 1 next to Popularity!
-    position: 1, // Position 1 puts it to the right of Popularity
+    row: 1, 
+    position: 1,
     startData() { return {
         unlocked: false,
-        points: new Decimal(0), // Tracks CURRENT Baristas
+        points: new Decimal(0), 
     }},
-    color: "#E67E22", // A nice warm orange/brown color
-    requires: new Decimal(11), // Requires 11 Coffee Cups
+    color: "#E67E22", 
+    requires: new Decimal(11), 
     resource: "Baristas",
     baseResource: "Coffee Cups",
-    baseAmount() { return player.c.points }, // Checks your Coffee Cups layer!
+    baseAmount() { return player.c.points }, // Checks Coffee Cups layer!
     type: "static",
-    base: 1.5, // Custom static scaling base
+    base: 1.5, 
     exponent: 0.7,
 
     gainMult() { return new Decimal(1) },
@@ -45,29 +45,29 @@ addLayer("b", { // "b" for Baristas
         "main-display",
         "prestige-button",
         "blank",
-        "milestones", // Draws your native milestone panel
+        "milestones",
         "blank",
         "hr",
         "blank",
         ["display-text", "<h3>Barista Upgrades</h3>"],
         "blank",
         "buyables",
-        "blank"    // Draws your buyables grid
+        "blank"
     ],
 
-    // --- MILESTONES CHECKING CURRENT BARISTAS ---
+    // --- MILESTONES BARISTAS ---
     milestones: {
         0: {
             requirementDescription: "1 Barista",
             done() { 
-                return player.b.points.gte(1) // Checks current Baristas
+                return player.b.points.gte(1) 
             },
             effectDescription: "Unlock the Barista Efficiency buyable and a new Coffee Cups upgrade.",
         },
         1: {
             requirementDescription: "3 Baristas",
             done() { 
-                return player.b.points.gte(3) // Checks current Baristas
+                return player.b.points.gte(3)
             },
             effectDescription: "Unlock the Advanced Technique buyable.",
             unlocked() { return hasMilestone('b', 0) },
@@ -75,32 +75,26 @@ addLayer("b", { // "b" for Baristas
         2: {
             requirementDescription: "16 Baristas",
             done() { 
-                return player.b.points.gte(16) // Checks current Baristas
+                return player.b.points.gte(16)
             },
             effectDescription: "Unlock the VIP Party? Buyable.",
             unlocked() {return hasMilestone('s', 1)},
         },
     },
 
-    // --- BUYABLE THAT COSTS CUSTOMERS & BOOSTS BEANS ---
+    // --- BUYABLES ---
     buyables: {
-        rows: 1, // REQUIRED: Tells the engine how many rows are in the buyable grid
-        cols: 3, // REQUIRED: Tells the engine how many columns are in the buyable grid
+        rows: 1, 
+        cols: 3, 
         
         11: {
             title: "Barista Efficiency",
             cost(x) { 
-                // 1. Fetch current target tier purchase count index
                 let level = x || getBuyableAmount(this.layer, this.id);
-                
-                // 2. Base Exponential scaling rule before reaching the threshold
                 let baseScaling = new Decimal(1.75).pow(level);
                 
-                // 🌟 THE STAR 4 ERAS LEVEL 500 NERF MATRIX 🌟
-                // If the buyable level crosses 500, aggressively warp the cost exponent!
                 if (level.gte(1000)) {
                     let excess = level.sub(1000);
-                    // Standard cost base multiplied by an additional compounding exponent wall (e.g., ^1.8)
                     baseScaling = baseScaling.times(new Decimal(1.5).pow(excess.pow(1.5)));
                 }
                 
@@ -122,11 +116,8 @@ addLayer("b", { // "b" for Baristas
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) {
-                // Your current training level multiplier formula (1.25 ^ level)
                 let baseEffect = new Decimal(1.25).pow(x);
                 
-                // --- 🌟 MANUALLY LINK COFFEE UPGRADE 43 ---
-                // If they bought the upgrade in layer 'c', multiply your training power!
                 if (hasUpgrade('c', 43)) {
                     baseEffect = baseEffect.times(upgradeEffect('c', 43));
                 }
@@ -140,17 +131,11 @@ addLayer("b", { // "b" for Baristas
         12: {
             title: "Advanced Technique",
             cost(x) { 
-                // 1. Fetch current target tier purchase count index
                 let level = x || getBuyableAmount(this.layer, this.id);
-                
-                // 2. Base Exponential scaling rule before reaching the threshold
                 let baseScaling = new Decimal(1.6).pow(level);
                 
-                // 🌟 THE STAR 4 ERAS LEVEL 500 NERF MATRIX 🌟
-                // If the buyable level crosses 500, aggressively warp the cost exponent!
                 if (level.gte(1000)) {
                     let excess = level.sub(1000);
-                    // Standard cost base multiplied by an additional compounding exponent wall (e.g., ^1.8)
                     baseScaling = baseScaling.times(new Decimal(1.5).pow(excess.pow(1.5)));
                 }
                 
@@ -172,13 +157,9 @@ addLayer("b", { // "b" for Baristas
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) {
-                // --- EXPONENTIAL MATH FORMULA ---
-                // Gives a compounding 20% multiplier (1.20) per level purchased!
-                // Formula: 1.20 ^ Level
                 return new Decimal(1.20).pow(x);
             },
             unlocked() {
-                // Stays hidden until they cross the 1 Barista milestone
                 return hasMilestone('b', 1)
             }
         },
@@ -203,16 +184,14 @@ addLayer("b", { // "b" for Baristas
                 return baseBoost;
             },
             canAfford() { 
-                // Explicitly checks against your Barista prestige points wallet balance!
                 return player.p.customers.gte(this.cost()); 
             },
             buy() {
-                // 🌟 CROSS-LAYER SUBTRACTION: Deducts the amount straight from your customer pool!
                 player.p.customers = player.p.customers.sub(this.cost());
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1));
             },
             unlocked() { 
-                return hasMilestone('b', 2); // Revealed exclusively in the Star 2 Era!
+                return hasMilestone('b', 2); 
             }
         },
     

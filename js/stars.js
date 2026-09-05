@@ -1,14 +1,14 @@
-addLayer("s", { // "s" for Stars
+addLayer("s", { 
     name: "Restaurant Stars",
     symbol: "S",
-    row: 2, // Sits on Row 2 directly below Popularity and Baristas!
+    row: 2, 
     position: 0,
     startData() { return {
         unlocked: false,
-        points: new Decimal(0), // Tracks CURRENT Stars earned
+        points: new Decimal(0),
         starsUnlocked: false,
     }},
-    color: "#F1C40F", // Bright golden star yellow
+    color: "#F1C40F",
     requires: new Decimal(1e50), // 
     resource: "Stars",
     baseResource: "Beans",
@@ -18,8 +18,6 @@ addLayer("s", { // "s" for Stars
    requires() { 
         return this.cost(player.s.points); 
     },
-
-    // --- YOUR INTACT CUSTOM PRICING TERMINAL ---
     cost(x) {
         let currentStars = new Decimal(x);
 
@@ -27,23 +25,23 @@ addLayer("s", { // "s" for Stars
         if (currentStars.eq(1)) return new Decimal(2.5e130);
         if (currentStars.eq(2)) return new Decimal("5e949");
         if (currentStars.eq(3)) return new Decimal("5e1114");
-        if (currentStars.eq(4)) return new Decimal("1e2500");
+        if (currentStars.eq(4)) return new Decimal("5e2499");
 
         return new Decimal(1e309); 
     },
 
     update(diff) {
-        // --- 🌟 STAR MILESTONE 0 AUTOMATION ENGINE 🌟 ---
+        // ---  STAR MILESTONE 0 AUTOMATION  ---
         if (hasMilestone('s', 0)) {
             
-            // ☕ Loop A: Safely buy Row 1 Coffee Upgrades (11, 12, 13, 14, 15)
+            // buy Row 1 Coffee Upgrades
             for (let i = 11; i <= 15; i++) {
                 if (canAffordUpgrade('c', i) && !hasUpgrade('c', i)) {
                     buyUpgrade('c', i);
                 }
             }
 
-            // 🥛 Loop B: Safely buy Row 2 Coffee Upgrades (21, 22, 23, 24, 25)
+            // buy Row 2 Coffee Upgrades
             for (let j = 21; j <= 25; j++) {
                 if (canAffordUpgrade('c', j) && !hasUpgrade('c', j)) {
                     buyUpgrade('c', j);
@@ -51,6 +49,7 @@ addLayer("s", { // "s" for Stars
             }
             
         }
+        // buy Row 1-2 Milk, Row 3 Coffee and Row 1-2 Popularity Upgrades
         if (hasMilestone('s', 2)) {
             for (let h= 31; h <= 35; h++) {
                 if (canAffordUpgrade('c', h) && !hasUpgrade('c', h)) {
@@ -91,7 +90,6 @@ addLayer("s", { // "s" for Stars
     gainMult() { return new Decimal(1) },
     gainExp() { return new Decimal(1) },
 
-    // Enforces the standard prestige bounds
     canBuyMax: false,
     resetsNothing: false,
 
@@ -101,19 +99,15 @@ addLayer("s", { // "s" for Stars
         "prestige-button",
         "blank",
         ["display-text", function() {
-            // Calculates your compounding world multiplier to display on the tab page
             let activeMultiplier = new Decimal(1.03).pow(player.s.points);
             return "Current Stars are shining: <h3 style='color: #F1C40F; display: inline;'>^" + format(activeMultiplier) + "</h3> Beans."
         }],
         "blank",
         "hr",
         "blank",
-        "milestones" // Draws your 5-Star native progression panel automatically!
+        "milestones"
     ],
 
-    // ==========================================
-    // THE 5-STAR NATIVE MILESTONE REGISTRY
-    // ==========================================
     milestones: {
         0: {
             requirementDescription: "⭐ 1 Coffee Shop Star",

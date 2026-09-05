@@ -143,14 +143,14 @@ addLayer("p", {
         0: {
             requirementDescription: "1000 Customers",
             done() { 
-                return player.p.customers.gte(1e3) // Checks your 'p' layer customers!
+                return player.p.customers.gte(1e3) 
             },
             effectDescription: "Unlock bulk-buying for Coffee Cups.",
         },
         1: {
             requirementDescription: "1e50 Customers",
             done() { 
-                return player.p.customers.gte(1e50) // Checks your 'p' layer customers!
+                return player.p.customers.gte(1e50) 
             },
             effectDescription: "Unlock VIP Customers.",
             unlocked() {return hasMilestone('s', 1)},
@@ -158,21 +158,21 @@ addLayer("p", {
         2: {
             requirementDescription: "1e583 Customers",
             done() { 
-                return player.p.customers.gte("1e583") // Checks your 'p' layer customers!
+                return player.p.customers.gte("1e583") 
             },
             effectDescription: "1e50x Beans.",
             unlocked() {return hasUpgrade('w', 24)},
         },
     },
 
-    row: 1, // Row the layer is in on the tree (0 is the first row)
+    row: 1, 
     hotkeys: [
         {key: "p", description: "P: Reset for Popularity", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
 
     branches: [
-        "c", "s" // Connects this layer directly to the Coffee Cups layer ('c')!
+        "c", "s"
     ],
     
     upgrades: {
@@ -197,9 +197,9 @@ addLayer("p", {
             description: "Unlock a new upgrade for Coffee Cups.",
             cost: new Decimal(100),
 
-            currencyDisplayName: "Customers",       // The name shown when you hover over the cost
-            currencyInternalName: "customers",      // The exact variable name inside startData()
-            currencyLayer: "p",                     // The layer ID where this variable lives ("p")
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",      
+            currencyLayer: "p",                   
             unlocked() {
                 return hasUpgrade('p', 11)
             },
@@ -209,17 +209,15 @@ addLayer("p", {
             description: "Being popular attracts more customers.",
             cost: new Decimal(1e3),
             effect() {
-                // formula: (Popularity Points * 0.5) + 1. 
-                // If you have 4 Popularity, it provides a 3x multiplier to your customer generation speed!
                 return player[this.layer].points.times(0.5).add(1);
             },
             effectDisplay() { 
                 return format(upgradeEffect(this.layer, this.id)) + "x" 
             },
 
-            currencyDisplayName: "Customers",       // The name shown when you hover over the cost
-            currencyInternalName: "customers",      // The exact variable name inside startData()
-            currencyLayer: "p",                     // The layer ID where this variable lives ("p")
+            currencyDisplayName: "Customers",       
+            currencyInternalName: "customers",     
+            currencyLayer: "p",                     
             currencyLocation() { return player.p },
             unlocked() {
                 return hasUpgrade('p', 12)
@@ -239,7 +237,7 @@ addLayer("p", {
             currencyInternalName: "customers",      
             currencyLayer: "p",                     
             currencyLocation() { return player.p }, 
-            unlocked() { return hasUpgrade('c', 41) }, // Chains cleanly after upgrade 41!
+            unlocked() { return hasUpgrade('c', 41) }, 
         },
         15: {
             title: "Franchise Phenomenon",
@@ -277,8 +275,6 @@ addLayer("p", {
             title: "Premium VIP Endorsement",
             description: "VIP's have discovered BEANZ.",
             cost: new Decimal("1e65"),
-            
-            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p",                     
@@ -296,8 +292,6 @@ addLayer("p", {
             title: "VIP Supply Logistics",
             description: "VIP's are doing the work for Milk.",
             cost: new Decimal("1e75"), 
-            
-            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p",                     
@@ -314,9 +308,7 @@ addLayer("p", {
         24: {
             title: "Franchise Royalty",
             description: "Multiply Beans based on first two Barista buyables.",
-            cost: new Decimal("1e83"), // Premium late-game customer vault size cost!
-            
-            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
+            cost: new Decimal("1e83"), 
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p",                     
@@ -326,12 +318,10 @@ addLayer("p", {
                 return hasUpgrade('p', 23)
             },
             effect() {
-                // Grabs the live levels of your automated Barista training slots
                 let level11 = getBuyableAmount('b', 11);
                 let level12 = getBuyableAmount('b', 12);
                 let combinedStaffLevels = level11.add(level12);
                 
-                // Formula: Every combined training level grants an additional +5% global Bean velocity!
                 return new Decimal(1.01).pow(combinedStaffLevels);
             },
             effectDisplay() { return format(this.effect()) + "x" }
@@ -339,16 +329,13 @@ addLayer("p", {
         25: {
             title: "The Grand Franchise",
             description: "A VIP Customer bought the Espresso Lab Recipes.",
-            cost: new Decimal("1.6e153"), // Ultra late-game customer cost barrier!
-            
-            // --- NATIVE TMT CROSS-CURRENCY REDIRECTS ---
+            cost: new Decimal("1.6e153"), 
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p",                     
             currencyLocation() { return player.p }, 
 
             unlocked() { 
-                // Dynamically reveals itself once you buy the preceding customer upgrade
                 return hasUpgrade('p', 24); 
             },
            effect() {
@@ -371,7 +358,7 @@ addLayer("p", {
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p", 
-            unlocked() { return hasMilestone('s', 3) }, // Revealed natively when you hit 4 Stars!
+            unlocked() { return hasMilestone('s', 3) },
             effect() {
                 let permits = player.w.points || new Decimal(0);
                 return new Decimal(2.50).pow(permits);

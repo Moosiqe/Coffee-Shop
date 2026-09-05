@@ -41,7 +41,6 @@ function canGenPoints(){
 function getGameSpeedMod() {
     let speed = 1;
     if (hasUpgrade('c', 35)) {
-        // Adds +5% game speed for every 10 Research Points owned
         let bonus = player.l.researchPoints.div(10).times(0.02);
         speed += bonus.toNumber();
     }
@@ -72,7 +71,6 @@ function getPointGen() {
 	//if (player.p.unlocked) {
         //let customerBoost = player.p.customers.times(0.1).add(1);
         //gain = gain.times(customerBoost);
-		// This will boost directly Beans based on Customers 
     //}
 	if (hasUpgrade('p', 11)) gain = gain.times(upgradeEffect('p', 11))
 	if (hasUpgrade('p', 15)) {gain = gain.times(upgradeEffect('p', 15))}
@@ -99,6 +97,8 @@ function getPointGen() {
 	// --- Warehouse Upgrades ---
 	if (hasUpgrade('w', 11)) {gain = gain.times(upgradeEffect('w', 11))}
     
+	// --- Softcap 1 ---
+	gain = softcap(gain, new Decimal("1e2500"), new Decimal(0.05));
 	return gain
 }
 

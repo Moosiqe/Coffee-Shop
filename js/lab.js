@@ -1,18 +1,16 @@
-addLayer("l", { // "l" for Espresso Lab
+addLayer("l", { 
     name: "Espresso Lab",
     symbol: "L",
-    row: 2, // Sits on Row 2 directly next to Restaurant Stars!
-    position: -1, // Position 1 moves it to the right side of Stars (Position 0)
-    
-    // --- INITIALIZE ALL STORAGE WALLETS ---
+    row: 2,
+    position: -1, 
     startData() { return {
         unlocked: true,
-        points: new Decimal(0), // Standard TMT points layer variable (we can leave this as 0)
+        points: new Decimal(0),
         
         // 🌟 CUSTOM LAB WALLETS 🌟
-        researchPoints: new Decimal(0), // Unified currency to buy recipes
-        beanUnits: new Decimal(0),      // Current slider value for Beans
-        milkUnits: new Decimal(0),      // Current slider value for Milk
+        researchPoints: new Decimal(0),
+        beanUnits: new Decimal(0), 
+        milkUnits: new Decimal(0), 
         
         // Individual recipe level trackers
         macchiatoLevel: new Decimal(0),
@@ -20,54 +18,41 @@ addLayer("l", { // "l" for Espresso Lab
         cappuccinoLevel: new Decimal(0),
     }},
     
-    color: "#9B59B6", // A beautiful scientific amethyst purple
-    type: "none", // Since it uses your top exchangers, it doesn't need a default prestige button
+    color: "#9B59B6",
+    type: "none",
      update(diff) {
-        // --- 🧪 THE STAR 3 BALANCED LAB AUTOMATOR MATRIX ---
         if (hasMilestone('s', 3)) {
-            
-            // 1. Calculate the maximum fractional allocation window allowed for this frame tick slice
             let maxLevelsThisFrame = new Decimal(25).times(diff);
 
-            // 🔬 Buyable 11 Independent Automation (Beans Matrix)
+            // Buyable 11 Automation
             if (canBuyBuyable('l', 11)) {
-                // Find the absolute maximum number of levels your Beans wallet can legally afford right now
                 let maxAffordable11 = player.points.div(layers.l.buyables[11].cost());
                 
-                // Clamp the purchase size so it never exceeds your +25/sec limit or what you can actually afford
                 let actualBought11 = Decimal.min(maxLevelsThisFrame, maxAffordable11).floor();
 
                 if (actualBought11.gt(0)) {
-                    // Calculate and subtract the total Bean cost for this batch natively
                     let totalCost11 = layers.l.buyables[11].cost().times(actualBought11);
                     player.points = player.points.sub(totalCost11);
 
-                    // Update your level tracking counters
                     let currentAmt11 = getBuyableAmount('l', 11);
                     setBuyableAmount('l', 11, currentAmt11.add(actualBought11));
 
-                    // 🌟 SYNC UNLOCKED: Mint the EXACT number of Research Points you paid for!
                     player.l.researchPoints = player.l.researchPoints.add(actualBought11);
                 }
             }
 
-            // 🔬 Buyable 12 Independent Automation (Milk Matrix)
+            // Buyable 12  Automation 
             if (canBuyBuyable('l', 12)) {
-                // Find the absolute maximum number of levels your Milk wallet can legally afford right now
                 let maxAffordable12 = player.c.milk.div(layers.l.buyables[12].cost());
-                
                 let actualBought12 = Decimal.min(maxLevelsThisFrame, maxAffordable12).floor();
 
                 if (actualBought12.gt(0)) {
-                    // Calculate and subtract the total Milk cost for this batch natively
                     let totalCost12 = layers.l.buyables[12].cost().times(actualBought12);
                     player.c.milk = player.c.milk.sub(totalCost12);
 
-                    // Update your level tracking counters
                     let currentAmt12 = getBuyableAmount('l', 12);
                     setBuyableAmount('l', 12, currentAmt12.add(actualBought12));
 
-                    // 🌟 SYNC UNLOCKED: Mint the EXACT number of Research Points you paid for!
                     player.l.researchPoints = player.l.researchPoints.add(actualBought12);
                 }
             }
@@ -86,8 +71,6 @@ addLayer("l", { // "l" for Espresso Lab
         "blank",
         ["display-text", "<h3>Data Extraction Terminals</h3>"],
         "blank",
-        
-        // Draws your two conversion buttons side-by-side instantly!
         "buyables",
         "blank",
         ["display-text", function() {
@@ -109,9 +92,6 @@ addLayer("l", { // "l" for Espresso Lab
         // --- RENDER CATEGORY BUTTON GROUPS ---
         ["display-text", "<h4>Adjust Bean & Milk Density:</h4>"],  
         "blank",
-        
-        // 🌟 FIXED LAYOUT ROW: All four control modules are packed into a single flat array!
-        // The two blank entries create a clean horizontal separation bar between Beans and Milk.
         ["row", [
             ["buyable", 21], ["buyable", 22], 
             "blank", "blank", 
@@ -124,8 +104,8 @@ addLayer("l", { // "l" for Espresso Lab
         "hr",
     ],
     buyables: {
-        rows: 1, // 🌟 FIXED: Changed to 2 rows to fit both entry tiers safely
-        cols: 2, // 🌟 FIXED: Set to 4 to allow 4 horizontal buttons on the grid tracking
+        rows: 1,
+        cols: 2,
 
         11: {
             title: "Extract Research Data (Beans)",
@@ -177,10 +157,9 @@ addLayer("l", { // "l" for Espresso Lab
             title: "🫘 -",
             cost(x) { return new Decimal(0) },
             display() { return "" }, 
-            canAfford() { return player.l.beanUnits.gt(0) }, // Clickable if you have units to remove
+            canAfford() { return player.l.beanUnits.gt(0) },
             buy() { 
                 player.l.beanUnits = player.l.beanUnits.sub(1)
-                // 🌟 REFUND SWITCH: Returning the Research Point back to the player wallet!
                 player.l.researchPoints = player.l.researchPoints.add(1)
             },
             style: { "width": "65px", "height": "65px", "min-height": "65px", "margin": "2px" },
@@ -190,10 +169,8 @@ addLayer("l", { // "l" for Espresso Lab
             title: "🫘 +",
             cost(x) { return new Decimal(0) },
             display() { return "" },
-            // 🌟 COST GATE: Only clickable if the player has at least 1 Research Point!
             canAfford() { return player.l.researchPoints.gte(1) },
             buy() { 
-                // 🌟 COST DEDUCTION: Consuming exactly 1 Research Point to allocate a unit
                 player.l.researchPoints = player.l.researchPoints.sub(1)
                 player.l.beanUnits = player.l.beanUnits.add(1) 
             },
@@ -211,7 +188,6 @@ addLayer("l", { // "l" for Espresso Lab
             canAfford() { return player.l.milkUnits.gt(0) },
             buy() { 
                 player.l.milkUnits = player.l.milkUnits.sub(1)
-                // 🌟 REFUND SWITCH: Returning the Research Point back to the player wallet!
                 player.l.researchPoints = player.l.researchPoints.add(1)
             },
             style: { "width": "65px", "height": "65px", "min-height": "65px", "margin": "2px" },
