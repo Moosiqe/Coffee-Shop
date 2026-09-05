@@ -55,6 +55,9 @@ addLayer("c", {
             if (hasUpgrade('c', 63)) {
                 basePassive = basePassive.times(upgradeEffect('c', 63));
             }
+            if (hasUpgrade('w', 25)) {
+                basePassive = basePassive.times(upgradeEffect('w', 25));
+            }
             return basePassive;
         }
         
@@ -408,7 +411,7 @@ addLayer("c", {
         62: {
             title: "Caffeinated Brainstorming",
             description: "Coffee Cups divide Lab Upgrade costs.",
-            cost: new Decimal(3e4),
+            cost: new Decimal(1.5e4),
             unlocked() { return hasUpgrade('c', 61) },
             effect() {
                 // 🛡️ THE LOGARITHMIC CURVE: Extracts the order of magnitude of your Coffee Cups safely!
@@ -423,42 +426,36 @@ addLayer("c", {
         63: {
             title: "Self-Refilling Cups",
             description: "Coffee Cups boost itself.",
-            cost: new Decimal(2.5e5), // Balanced right after Upgrade 62
+            cost: new Decimal(2e5),
             unlocked() { return hasUpgrade('c', 62) }, // Flows cleanly down Row 6
             effect() {
-                // 1. Fetch your current total Coffee Cups balance
-                let cups = player.c.points || new Decimal(0);
-                
-                // 🛡️ THE LOGARITHMIC ESCALATION: Extracts the Order of Magnitude (OoM) safely
+                let cups = player.c.points;
                 let cupsLog = cups.add(1).log10();
                 
-                // 📊 THE BALANCED MULTIPLIER SCALING: 
-                // We multiply the raw log count by a controlled factor (like times 0.50).
-                // Example at 1e100 Cups: (100 * 0.50) = +50.00/sec added straight to your passive velocity!
                 return cupsLog.pow(1.12);
             },
             effectDisplay() { return format(this.effect()) + "x" }
         },
         64: {
             title: "Extra Spicy Beans",
-            description: "1e50x Beans.",
-            cost: new Decimal(5e6), // Balanced right after Upgrade 63
+            description: "1e20x Beans.",
+            cost: new Decimal(3e6),
             unlocked() { return hasUpgrade('c', 63) }, // Flows cleanly down Row 6
             effect() {
-                return new Decimal("1e50");
+                return new Decimal("1e20");
             },
             effectDisplay() { return format(this.effect()) + "x" }
         },
         65: {
             title: "MATRIX DIVIDER",
             description: "Divide Lab Upgrade costs one last time...",
-            cost: new Decimal(2.5e8),
+            cost: new Decimal(3e10),
             unlocked() { return hasUpgrade('c', 64) },
             effect() {
-                let cups = player.c.points || new Decimal(0);
+                let cups = player.c.points;
                 let cupsLog2 = cups.add(1).log2();
         
-                return new Decimal(1.38).pow(cupsLog2);
+                return new Decimal(1.28).pow(cupsLog2);
             },
             effectDisplay() { return "/" + format(this.effect(), 2) },
         },
@@ -469,20 +466,13 @@ addLayer("c", {
             description: "Milk multiplies Beans.",
             cost: new Decimal(250),
             effect() {
-                // 1. Calculate your original raw formula (e.g., scaling based on milk)
-                let baseEffect = player.c.milk.add(1).pow(0.4); // Replace pow/formula with your exact original if different
-                
-                // 🌟 THE DIMINISHING POWER SHIELD 🌟
-                // Triggers a progressive softcap if the effect crosses 1e300
+                let baseEffect = player.c.milk.add(1).pow(0.4);
                 if (baseEffect.gt("1e150")) {
                     let excess = baseEffect.div("1e150");
-                    
-                    // Applies a 0.1 power dampener to the excess, flattening the curve safely
                     baseEffect = new Decimal("1e150").times(excess.pow(0.1));
                 }
                 return baseEffect;
             },
-            // This updates the button text in real-time so players can see the exact active boost
             effectDisplay() { 
                 let rawEffect = player.c.milk.add(1).pow(0.4);
                 
@@ -666,7 +656,7 @@ addLayer("c", {
         71: {
             title: "Premium Marketing Blend",
             description: "Milk boosts VIP Customers.",
-            cost: new Decimal("1e421"), 
+            cost: new Decimal("1e426"), 
             
             effect() {
                 // Re-calculates your current base milk gain to create a scaling multiplier
@@ -684,7 +674,7 @@ addLayer("c", {
         72: {
             title: "Lactosed Automation Tuning",
             description: "How can Milk boost a VIP Party?",
-            cost: new Decimal("1e470"),
+            cost: new Decimal("4.61e461"),
             currencyDisplayName: "Milk",
             currencyInternalName: "milk",
             currencyLayer: "c",
@@ -701,7 +691,7 @@ addLayer("c", {
         73: {
             title: "No milk = no Coffee?",
             description: "Coffee Cups boost Milk",
-            cost: new Decimal("1e570"),
+            cost: new Decimal("1e563"),
             currencyDisplayName: "Milk",
             currencyInternalName: "milk",
             currencyLayer: "c",
@@ -715,8 +705,8 @@ addLayer("c", {
         },
         74: {
             title: "Lab Infusion",
-            description: "Improve upgrade 55.",
-            cost: new Decimal("1e590"), 
+            description: "Improve upgrade 25.",
+            cost: new Decimal("1e579"), 
             currencyDisplayName: "Milk",
             currencyInternalName: "milk",
             currencyLayer: "c",
@@ -731,7 +721,7 @@ addLayer("c", {
         75: {
             title: "ULTIMATE DIVIDER",
             description: "Divide Lab Upgrade costs again...",
-            cost: new Decimal("1e1600"),
+            cost: new Decimal("1e800"),
             currencyDisplayName: "Milk",
             currencyInternalName: "milk",
             currencyLayer: "c",

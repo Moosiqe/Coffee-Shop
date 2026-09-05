@@ -78,7 +78,7 @@ function getPointGen() {
 	if (hasUpgrade('p', 15)) {gain = gain.times(upgradeEffect('p', 15))}
 	if (hasUpgrade('p', 22)) {gain = gain.times(upgradeEffect('p', 22))}
 	if (hasUpgrade('p', 24)) {gain = gain.times(upgradeEffect('p', 24));}
-
+	if (hasMilestone('p', 2)) {gain = gain.times("1e50");}
 	// --- Barista Upgrades ---
 	if (hasMilestone('b', 0)) {gain = gain.times(buyableEffect('b', 11))}
 

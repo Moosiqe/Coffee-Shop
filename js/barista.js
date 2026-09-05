@@ -69,7 +69,7 @@ addLayer("b", { // "b" for Baristas
             done() { 
                 return player.b.points.gte(3) // Checks current Baristas
             },
-            effectDescription: "Unlock the Advanced Frothing Technique buyable.",
+            effectDescription: "Unlock the Advanced Technique buyable.",
             unlocked() { return hasMilestone('b', 0) },
         },
         2: {
@@ -138,7 +138,7 @@ addLayer("b", { // "b" for Baristas
             }
         },
         12: {
-            title: "Advanced Frothing Technique",
+            title: "Advanced Technique",
             cost(x) { 
                 // 1. Fetch current target tier purchase count index
                 let level = x || getBuyableAmount(this.layer, this.id);
@@ -157,7 +157,7 @@ addLayer("b", { // "b" for Baristas
                 return new Decimal(1).times(baseScaling).floor();
             },
             display() { 
-                return "Train your baristas in microfoam styling.\n\n" +
+                return "Train your baristas in styling.\n\n" +
                        "Level: " + formatWhole(player.b.buyables[this.id]) + "\n" +
                        "Cost: " + format(this.cost()) + " Customers\n\n" +
                        "Effect: Multiplies Milk by " + format(buyableEffect(this.layer, this.id)) + "x"

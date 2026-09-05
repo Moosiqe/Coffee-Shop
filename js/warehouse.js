@@ -173,7 +173,7 @@ addLayer("w", { // "w" for Supply Warehouse
         25: {
             title: "Industrial Cups",
             description: "Coffee Cups go to the next level.",
-            cost: new Decimal(25), // Capstone price for the Row 2 branch!
+            cost: new Decimal(22),
             unlocked() { return hasUpgrade('w', 24) },
             effect() {
                 let permits = player.w.points || new Decimal(0);

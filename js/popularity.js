@@ -155,6 +155,14 @@ addLayer("p", {
             effectDescription: "Unlock VIP Customers.",
             unlocked() {return hasMilestone('s', 1)},
         },
+        2: {
+            requirementDescription: "1e583 Customers",
+            done() { 
+                return player.p.customers.gte("1e583") // Checks your 'p' layer customers!
+            },
+            effectDescription: "1e50x Beans.",
+            unlocked() {return hasUpgrade('w', 24)},
+        },
     },
 
     row: 1, // Row the layer is in on the tree (0 is the first row)
@@ -175,29 +183,9 @@ addLayer("p", {
             description: "Customers multiply Beans.",
             cost: new Decimal(15),
             effect() {
-                // 1. Calculate your original, raw customer formula
-                let baseEffect = player[this.layer].customers.add(1).pow(0.3);
-                
-                // 🌟 THE DIMINISHING POWER SHIELD 🌟
-                // If the calculation attempts to spike past 1e250, drop the dampening filter!
-                if (baseEffect.gt("1e100")) {
-                    let excess = baseEffect.div("1e100");
-                    
-                    // Extracts the excess value and applies a crushing ^0.10 power dampener,
-                    // allowing it to scale smoothly into the endgame without leaking calculation arrays!
-                    baseEffect = new Decimal("1e100").times(excess.pow(0.25));
-                }
-                return baseEffect;
+                return player[this.layer].customers.add(1).pow(0.3)
             },
-            effectDisplay() { 
-                let rawEffect = player[this.layer].customers.add(1).pow(0.3);
-                
-                // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
-                if (rawEffect.gt("1e100")) {
-                    return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
-                }
-                return format(this.effect()) + "x"; 
-            },
+            effectDisplay() { return format(upgradeEffect(this.layer, this.id))+"x" },
             // --- ADD THESE 3 LINES TO CHANGE THE CURRENCY ---
             currencyDisplayName: "Customers",       // The name shown when you hover over the cost
             currencyInternalName: "customers",      // The exact variable name inside startData()
@@ -240,7 +228,7 @@ addLayer("p", {
         14: {
             title: "Viral Marketing",
             description: "THEY NEED SOME MILK!!!",
-            cost: new Decimal(1.5e5), // Costs 150,000 Customers
+            cost: new Decimal(1.5e5),
             effect() {
                 return player[this.layer].customers.add(1).pow(0.21);
             },
@@ -256,30 +244,12 @@ addLayer("p", {
         15: {
             title: "Franchise Phenomenon",
             description: "Customers like BEANSS so much now.",
-            cost: new Decimal(5e11), // Costs 2,500 Customers (A solid mid-to-late goal)
+            cost: new Decimal(5e11),
             effect() {
-                // 1. Calculate your original, raw customer formula
-                let baseEffect = player[this.layer].customers.add(1).pow(0.44);
-                
-                // 🌟 THE DIMINISHING POWER SHIELD 🌟
-                // If the calculation attempts to spike past 1e250, drop the dampening filter!
-                if (baseEffect.gt("1e150")) {
-                    let excess = baseEffect.div("1e150");
-                    
-                    // Extracts the excess value and applies a crushing ^0.10 power dampener,
-                    // allowing it to scale smoothly into the endgame without leaking calculation arrays!
-                    baseEffect = new Decimal("1e150").times(excess.pow(0.35));
-                }
-                return baseEffect;
+                return player[this.layer].customers.add(1).pow(0.44);
             },
             effectDisplay() { 
-                let rawEffect = player[this.layer].customers.add(1).pow(0.44);
-                
-                // 🎨 VISUAL ANCHOR: Turn the readout text amber-orange if it has passed the break pad!
-                if (rawEffect.gt("1e150")) {
-                    return "<span style='color: #cd0b0b; font-weight: bold;'>" + format(this.effect()) + "x (softcapped)</span>";
-                }
-                return format(this.effect()) + "x"; 
+                return format(upgradeEffect(this.layer, this.id)) + "x" 
             },
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
@@ -397,7 +367,7 @@ addLayer("p", {
         31: {
             title: "Logistical Infusion",
             description: "Milk gets boosted by Permits.",
-            cost: new Decimal("1e249"),
+            cost: new Decimal("1e255"),
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p", 
@@ -411,7 +381,7 @@ addLayer("p", {
         32: {
             title: "Mass Market",
             description: "Beans Multiply Customers, crazy right?",
-            cost: new Decimal("1e270"), 
+            cost: new Decimal("5e267"), 
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p", 
@@ -425,9 +395,9 @@ addLayer("p", {
             effectDisplay() { return format(this.effect()) + "x" },
         },
         33: {
-            title: "High-Traffic Dairy Flow",
+            title: "High Traffic Flow",
             description: "Very basic stuff, Customer x Milk.",
-            cost: new Decimal("1e290"),
+            cost: new Decimal("2.89e289"),
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p", 
@@ -442,7 +412,7 @@ addLayer("p", {
         34: {
             title: "Viral Lab Marketing",
             description: "Improve upgrade 25.",
-            cost: new Decimal("1e380"),
+            cost: new Decimal("1e375"),
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p",
@@ -458,7 +428,7 @@ addLayer("p", {
         35: {
             title: "ULTRA DIVIDER",
             description: "Divide Lab Upgrade costs once again...",
-            cost: new Decimal("1e1300"), 
+            cost: new Decimal("1e463"), 
             currencyDisplayName: "Customers",       
             currencyInternalName: "customers",      
             currencyLayer: "p",

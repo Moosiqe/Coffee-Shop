@@ -249,6 +249,9 @@ addLayer("l", { // "l" for Espresso Lab
                 if (hasUpgrade('p', 35)) {
                     baseCost = baseCost.div(upgradeEffect('p', 35));
                 }
+                if (hasUpgrade('c', 65)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 65));
+                }
                 return baseCost.floor();
             },
             effect(x) {
@@ -295,6 +298,9 @@ addLayer("l", { // "l" for Espresso Lab
                     if (hasUpgrade('p', 35)) {
                     baseCost = baseCost.div(upgradeEffect('p', 35));
                     }
+                    if (hasUpgrade('c', 65)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 65));
+                }
                     return baseCost.floor();
                 },
             effect(x) {
@@ -326,7 +332,7 @@ addLayer("l", { // "l" for Espresso Lab
         53: {
             title: "Nitro Cold Brew",
             cost(x) { 
-                let baseCost = new Decimal(2).times(new Decimal(1.25).pow(x)); 
+                let baseCost = new Decimal(2).times(new Decimal(1.251).pow(x)); 
                 
                 // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
                 if (hasUpgrade('w', 14)) {
@@ -340,6 +346,9 @@ addLayer("l", { // "l" for Espresso Lab
                 }
                 if (hasUpgrade('p', 35)) {
                     baseCost = baseCost.div(upgradeEffect('p', 35));
+                }
+                if (hasUpgrade('c', 65)) {
+                    baseCost = baseCost.div(upgradeEffect('c', 65));
                 }
                 return baseCost.floor();
             },
