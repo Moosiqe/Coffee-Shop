@@ -19,10 +19,10 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.1 | "September 5th 2026" - Release</h3><br>
+	<h3>v0.1 | Release</h3><br>
 		- 3 Layers.<br>
 		- A lot of BEANS <br><br>
-	<h3>v0.11 | "September 7th 2026" - Mandatory bug fixes + QoL Update </h3><br>
+	<h3>v0.11 | Mandatory bug fixes + QoL Update </h3><br>
 		- corrected lab ratios; multiple combinations are possible now <br>
 		- added presets once the recipe is found <br>
 		- and other smaller changes`
