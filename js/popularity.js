@@ -241,7 +241,7 @@ addLayer("p", {
         },
         15: {
             title: "Franchise Phenomenon",
-            description: "Customers like BEANSS so much now.",
+            description: "Customers like BEANSS so much now, they boost beans.",
             cost: new Decimal(5e11),
             effect() {
                 return player[this.layer].customers.add(1).pow(0.44);

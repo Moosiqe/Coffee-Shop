@@ -1,3 +1,16 @@
+function getLabPercentages() {
+    let total = player.l.beanUnits.add(player.l.milkUnits);
+    if (total.eq(0)) return { beans: new Decimal(0), milk: new Decimal(0) };
+    
+    let rawBeans = player.l.beanUnits.div(total).times(100);
+    let rawMilk = player.l.milkUnits.div(total).times(100);
+
+    return {
+        beans: new Decimal(rawBeans.toFixed(2)),
+        milk: new Decimal(rawMilk.toFixed(2))
+    };
+};
+
 addLayer("l", { 
     name: "Espresso Lab",
     symbol: "L",
@@ -17,10 +30,11 @@ addLayer("l", {
         flatWhiteLevel: new Decimal(0),
         cappuccinoLevel: new Decimal(0),
     }},
+
     
     color: "#9B59B6",
     type: "none",
-     update(diff) {
+    update(diff) {
         if (hasMilestone('s', 3)) {
             let maxLevelsThisFrame = new Decimal(25).times(diff);
 
@@ -58,6 +72,7 @@ addLayer("l", {
             }
         }
     },
+    
     // --- BASELINE INTERFACE LAYOUT ---
     tabFormat: [
         "blank",
@@ -71,7 +86,7 @@ addLayer("l", {
         "blank",
         ["display-text", "<h3>Data Extraction Terminals</h3>"],
         "blank",
-        "buyables",
+        ["row", [["buyable", 11], ["buyable", 12]]],
         "blank",
         ["display-text", function() {
             let bUnits = player.l.beanUnits;
@@ -88,7 +103,7 @@ addLayer("l", {
                    "🥛 Milk Froth:  <h3 style='color: #3498DB; display: inline;'>" + format(milkPercent) + "%</h3> (" + formatWhole(mUnits) + " Units)"
         }],
         "blank",
-        
+        ["display-text", "<h4>You need the exact ratio to buy upgrades</h4>"],
         // --- RENDER CATEGORY BUTTON GROUPS ---
         ["display-text", "<h4>Adjust Bean & Milk Density:</h4>"],  
         "blank",
@@ -98,14 +113,22 @@ addLayer("l", {
             ["buyable", 23], ["buyable", 24]
         ]],
         "blank",
-        
+        ["display-text", function() {
+            // The header text only prints if at least one preset button is visible
+            if (getBuyableAmount('l', 51).gt(0) || getBuyableAmount('l', 52).gt(0) || getBuyableAmount('l', 53).gt(0)) {
+                return "<b>Mixture Presets:</b>";
+            }
+            return "";
+        }],
+        ["clickables", [3]],
         ["row", [["buyable", 51], ["buyable", 52], ["buyable", 53]]],
         "blank",
         "hr",
     ],
+    
     buyables: {
-        rows: 1,
-        cols: 2,
+        rows: 3,
+        cols: 3,
 
         11: {
             title: "Extract Research Data (Beans)",
@@ -177,10 +200,7 @@ addLayer("l", {
             style: { "width": "65px", "height": "65px", "min-height": "65px", "margin": "2px" },
             unlocked() { return true }
         },
-
-        // ==========================================
-        // 🥛 MILK MIX ADJUSTMENT BUTTONS
-        // ==========================================
+        // MILK MIX ADJUSTMENT BUTTONS
         23: {
             title: "🥛 -",
             cost(x) { return new Decimal(0) },
@@ -205,14 +225,14 @@ addLayer("l", {
             style: { "width": "65px", "height": "65px", "min-height": "65px", "margin": "2px" },
             unlocked() { return true }
         },
-        // ☕ REPEATABLE LEVEL RECIPE INDEX (Row 5)
-        // ==========================================
+        // Pre-Sets
+        
+        // RECIPE Upgrades
         51: {
             title: "Classic Macchiato",
            cost(x) { 
                 let baseCost = new Decimal(1).times(new Decimal(1.2).pow(x)); 
-                
-                // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
+
                 if (hasUpgrade('w', 14)) {
                     baseCost = baseCost.div(upgradeEffect('w', 14));
                 }
@@ -245,9 +265,9 @@ addLayer("l", {
                        "Currently: " + format(this.effect()) + "x Beans."
             },
             canAfford() {
-                // 🌟 EXPLICIT EXACT MATCH: Must have precisely 7 Beans and 4 Milk in the chamber!
-                let exactCombo = player.l.beanUnits.eq(7) && player.l.milkUnits.eq(4);
+                let mix = getLabPercentages();
                 
+                let exactCombo = mix.beans.eq(63.64) && mix.milk.eq(36.36);
                 return exactCombo && player.l.researchPoints.gte(this.cost());
             },
             buy() {
@@ -261,7 +281,6 @@ addLayer("l", {
                 cost(x) { 
                     let baseCost = new Decimal(2).times(new Decimal(1.25).pow(x)); 
                     
-                    // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
                     if (hasUpgrade('w', 14)) {
                         baseCost = baseCost.div(upgradeEffect('w', 14));
                     }
@@ -288,15 +307,15 @@ addLayer("l", {
             },
             display() { 
                 let amt = getBuyableAmount(this.layer, this.id);
-                return "Target Ratio: 38.46% Beans / 61.54% Milk.\n\n" +
+                return "Target Ratio: 37.04% Beans / 62.96% Milk.\n\n" +
                        "Level: " + formatWhole(amt) + "\n" +
                        "Cost: " + formatWhole(this.cost()) + " Research Points\n\n" +
                        "Currently: " + format(this.effect()) + "x Customers."
             },
             canAfford() {
-                // 🌟 EXPLICIT EXACT MATCH: Must have precisely 10 Beans and 16 Milk in the chamber!
-                let exactCombo = player.l.beanUnits.eq(10) && player.l.milkUnits.eq(16);
+                let mix = getLabPercentages();
                 
+                let exactCombo = mix.beans.eq(37.04) && mix.milk.eq(62.96);
                 return exactCombo && player.l.researchPoints.gte(this.cost());
             },
             buy() {
@@ -310,7 +329,6 @@ addLayer("l", {
             cost(x) { 
                 let baseCost = new Decimal(2).times(new Decimal(1.251).pow(x)); 
                 
-                // 🌟 THE SYNERGY DIVIDER: Slashes the cost based on your Warehouse Permits!
                 if (hasUpgrade('w', 14)) {
                     baseCost = baseCost.div(upgradeEffect('w', 14));
                 }
@@ -337,23 +355,61 @@ addLayer("l", {
             },
             display() { 
                 let amt = getBuyableAmount(this.layer, this.id);
-                return "Target Ratio: 13.04% Beans / 86.96% Milk.\n\n" +
+                return "Target Ratio: 15.94% Beans / 84.06% Milk.\n\n" +
                        "Level: " + formatWhole(amt) + "\n" +
                        "Cost: " + formatWhole(this.cost()) + " Research Points\n\n" +
                        "Currently: " + format(this.effect()) + "x Milk."
             },
             canAfford() {
-                // 🌟 EXPLICIT EXACT MATCH: Must have precisely 9 Beans and 60 Milk in the chamber!
-                let exactCombo = player.l.beanUnits.eq(9) && player.l.milkUnits.eq(60);
+                let mix = getLabPercentages();
                 
-                return exactCombo && player.l.researchPoints.gte(this.cost());
+                let exactCombo = mix.beans.eq(15.94) && mix.milk.eq(84.06);
+                return exactCombo && player.l.researchPoints.gte(new Decimal(this.cost()));
             },
             buy() {
+                player.l.researchPoints = player.l.researchPoints.sub(new Decimal(this.cost()));
+                
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1));
             },
             unlocked() { return true }
         }
     },
+    clickables: {
+        31: {
+            title: "Preset 1",
+            display() { return "63.64% - 36.36%" },
+            unlocked() { return getBuyableAmount('l', 51).gt(0) },
+            canClick() { return true },
+            onClick() {
+                player.l.beanUnits = new Decimal(7);
+                player.l.milkUnits = new Decimal(4);
+            },
+            style: { "width": "75px", "height": "65px", "min-height": "75px", "margin": "2px" },
+        },
+        32: {
+            title: "Preset 2",
+            display() { return "37.04% - 62.96%" },
+            unlocked() { return getBuyableAmount('l', 52).gt(0) },
+            canClick() { return true },
+            onClick() {
+                player.l.beanUnits = new Decimal(10);
+                player.l.milkUnits = new Decimal(17);
+            },
+            style: { "width": "75px", "height": "65px", "min-height": "75px", "margin": "2px" },
+        },
+        33: {
+            title: "Preset 3",
+            display() { return "15.94% - 84.06%" },
+            unlocked() { return getBuyableAmount('l', 53).gt(0) },
+            canClick() { return true },
+            onClick() {
+                player.l.beanUnits = new Decimal(11);
+                player.l.milkUnits = new Decimal(58);
+            },
+           style: { "width": "75px", "height": "65px", "min-height": "75px", "margin": "2px" },
+        },
+    },
+    
     branches: [
         "s" 
     ],

@@ -67,13 +67,13 @@ addLayer("w", { // "w" for Supply Warehouse
         },
         12: {
             title: "Moree Coffee Cups",
-            description: "Each Warehouse Upgrade you own adds +5/s to Coffee Cups",
+            description: "Each Warehouse Upgrade you own adds +6/s to Coffee Cups",
             cost: new Decimal(6),
             unlocked() { return hasUpgrade('w', 11) },
             effect() {
                 let upgCount = player.w.upgrades ? player.w.upgrades.length : 0;
                 
-                if (hasUpgrade('w', 12)) return new Decimal(upgCount).times(5);
+                if (hasUpgrade('w', 12)) return new Decimal(upgCount).times(6);
                 return new Decimal(0);
             },
             effectDisplay() { return "+" + formatWhole(this.effect()) + "/s" },

@@ -21,11 +21,11 @@ addLayer("s", {
     cost(x) {
         let currentStars = new Decimal(x);
 
-        if (currentStars.eq(0)) return new Decimal(5e49);
-        if (currentStars.eq(1)) return new Decimal(2.5e130);
-        if (currentStars.eq(2)) return new Decimal("5e949");
-        if (currentStars.eq(3)) return new Decimal("5e1114");
-        if (currentStars.eq(4)) return new Decimal("5e2499");
+        if (currentStars.eq(0)) return new Decimal("1e50");
+        if (currentStars.eq(1)) return new Decimal("5e130");
+        if (currentStars.eq(2)) return new Decimal("1e950");
+        if (currentStars.eq(3)) return new Decimal("1e1115");
+        if (currentStars.eq(4)) return new Decimal("1e2450");
 
         return new Decimal(1e309); 
     },

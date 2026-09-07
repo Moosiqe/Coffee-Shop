@@ -40,7 +40,7 @@ addLayer("c", {
     // Automatically runs smoothly every single game frame tick!
     passiveGeneration() {
          if (hasMilestone('s', 2)) {
-            let basePassive = new Decimal(15);
+            let basePassive = new Decimal(23);
             
             // 🌌 WAREHOUSE OVERCLOCK: If you buy Upgrade 12, ADD the scaling factor cleanly!
             if (hasUpgrade('w', 12)) {
