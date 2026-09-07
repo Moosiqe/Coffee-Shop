@@ -367,8 +367,6 @@ addLayer("l", {
                 return exactCombo && player.l.researchPoints.gte(new Decimal(this.cost()));
             },
             buy() {
-                player.l.researchPoints = player.l.researchPoints.sub(new Decimal(this.cost()));
-                
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1));
             },
             unlocked() { return true }

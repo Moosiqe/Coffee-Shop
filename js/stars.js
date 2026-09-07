@@ -9,7 +9,7 @@ addLayer("s", {
         starsUnlocked: false,
     }},
     color: "#F1C40F",
-    requires: new Decimal(1e50), // 
+    requires: new Decimal(1e50),
     resource: "Stars",
     baseResource: "Beans",
     baseAmount() { return player.points }, 
