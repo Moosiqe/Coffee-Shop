@@ -400,7 +400,7 @@ addLayer("l", {
                 let currentAllocated = player.l.beanUnits.add(player.l.milkUnits);
                 player.l.researchPoints = player.l.researchPoints.add(currentAllocated);
 
-                player.l.beanUnits = new Decimal(11);
+                player.l.beanUnits = new Decimal(10);
                 player.l.milkUnits = new Decimal(17);
 
                 let newAllocated = player.l.beanUnits.add(player.l.milkUnits);
