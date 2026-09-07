@@ -379,8 +379,15 @@ addLayer("l", {
             unlocked() { return getBuyableAmount('l', 51).gt(0) },
             canClick() { return true },
             onClick() {
+                let currentAllocated = player.l.beanUnits.add(player.l.milkUnits);
+                player.l.researchPoints = player.l.researchPoints.add(currentAllocated);
+
                 player.l.beanUnits = new Decimal(7);
                 player.l.milkUnits = new Decimal(4);
+
+                let newAllocated = player.l.beanUnits.add(player.l.milkUnits);
+                player.l.researchPoints = player.l.researchPoints.sub(newAllocated);
+                updateTemp();
             },
             style: { "width": "75px", "height": "65px", "min-height": "75px", "margin": "2px" },
         },
@@ -390,8 +397,15 @@ addLayer("l", {
             unlocked() { return getBuyableAmount('l', 52).gt(0) },
             canClick() { return true },
             onClick() {
-                player.l.beanUnits = new Decimal(10);
+                let currentAllocated = player.l.beanUnits.add(player.l.milkUnits);
+                player.l.researchPoints = player.l.researchPoints.add(currentAllocated);
+
+                player.l.beanUnits = new Decimal(11);
                 player.l.milkUnits = new Decimal(17);
+
+                let newAllocated = player.l.beanUnits.add(player.l.milkUnits);
+                player.l.researchPoints = player.l.researchPoints.sub(newAllocated);
+                updateTemp();
             },
             style: { "width": "75px", "height": "65px", "min-height": "75px", "margin": "2px" },
         },
@@ -401,8 +415,15 @@ addLayer("l", {
             unlocked() { return getBuyableAmount('l', 53).gt(0) },
             canClick() { return true },
             onClick() {
+                let currentAllocated = player.l.beanUnits.add(player.l.milkUnits);
+                player.l.researchPoints = player.l.researchPoints.add(currentAllocated);
+
                 player.l.beanUnits = new Decimal(11);
                 player.l.milkUnits = new Decimal(58);
+
+                let newAllocated = player.l.beanUnits.add(player.l.milkUnits);
+                player.l.researchPoints = player.l.researchPoints.sub(newAllocated);
+                updateTemp();
             },
            style: { "width": "75px", "height": "65px", "min-height": "75px", "margin": "2px" },
         },
